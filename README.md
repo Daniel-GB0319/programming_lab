@@ -1,2 +1,2 @@
-# teoria_computacional
-Practicas y Ejercicios de Teoria Computacional
+# programming_lab
+Repositorio para Practicas y ejercicios experimentales.
