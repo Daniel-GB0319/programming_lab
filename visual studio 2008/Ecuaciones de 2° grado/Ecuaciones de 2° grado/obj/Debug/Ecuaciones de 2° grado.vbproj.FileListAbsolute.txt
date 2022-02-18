@@ -1,0 +1,10 @@
+C:\Documents and Settings\Administrador\Mis documentos\Ecuaciones de 2° grado\Ecuaciones de 2° grado\bin\Debug\Ecuaciones de 2° grado.exe
+C:\Documents and Settings\Administrador\Mis documentos\Ecuaciones de 2° grado\Ecuaciones de 2° grado\bin\Debug\Ecuaciones de 2° grado.pdb
+C:\Documents and Settings\Administrador\Mis documentos\Ecuaciones de 2° grado\Ecuaciones de 2° grado\bin\Debug\Ecuaciones de 2° grado.xml
+C:\Documents and Settings\Administrador\Mis documentos\Ecuaciones de 2° grado\Ecuaciones de 2° grado\obj\Debug\ResolveAssemblyReference.cache
+C:\Documents and Settings\Administrador\Mis documentos\Ecuaciones de 2° grado\Ecuaciones de 2° grado\obj\Debug\Ecuaciones_de_2__grado.Form1.resources
+C:\Documents and Settings\Administrador\Mis documentos\Ecuaciones de 2° grado\Ecuaciones de 2° grado\obj\Debug\Ecuaciones_de_2__grado.Resources.resources
+C:\Documents and Settings\Administrador\Mis documentos\Ecuaciones de 2° grado\Ecuaciones de 2° grado\obj\Debug\Ecuaciones de 2° grado.vbproj.GenerateResource.Cache
+C:\Documents and Settings\Administrador\Mis documentos\Ecuaciones de 2° grado\Ecuaciones de 2° grado\obj\Debug\Ecuaciones de 2° grado.exe
+C:\Documents and Settings\Administrador\Mis documentos\Ecuaciones de 2° grado\Ecuaciones de 2° grado\obj\Debug\Ecuaciones de 2° grado.xml
+C:\Documents and Settings\Administrador\Mis documentos\Ecuaciones de 2° grado\Ecuaciones de 2° grado\obj\Debug\Ecuaciones de 2° grado.pdb

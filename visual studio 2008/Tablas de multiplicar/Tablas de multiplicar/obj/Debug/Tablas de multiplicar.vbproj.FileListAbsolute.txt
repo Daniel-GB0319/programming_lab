@@ -1,0 +1,20 @@
+C:\Documents and Settings\Administrador\Configuración local\Datos de programa\Temporary Projects\Tablas de multiplicar\obj\Debug\ResolveAssemblyReference.cache
+C:\Documents and Settings\Administrador\Configuración local\Datos de programa\Temporary Projects\Tablas de multiplicar\obj\Debug\Tablas_de_multiplicar.Form1.resources
+C:\Documents and Settings\Administrador\Configuración local\Datos de programa\Temporary Projects\Tablas de multiplicar\obj\Debug\Tablas_de_multiplicar.Resources.resources
+C:\Documents and Settings\Administrador\Configuración local\Datos de programa\Temporary Projects\Tablas de multiplicar\obj\Debug\Tablas de multiplicar.vbproj.GenerateResource.Cache
+C:\Documents and Settings\Administrador\Configuración local\Datos de programa\Temporary Projects\Tablas de multiplicar\bin\Debug\Tablas de multiplicar.exe
+C:\Documents and Settings\Administrador\Configuración local\Datos de programa\Temporary Projects\Tablas de multiplicar\bin\Debug\Tablas de multiplicar.pdb
+C:\Documents and Settings\Administrador\Configuración local\Datos de programa\Temporary Projects\Tablas de multiplicar\bin\Debug\Tablas de multiplicar.xml
+C:\Documents and Settings\Administrador\Configuración local\Datos de programa\Temporary Projects\Tablas de multiplicar\obj\Debug\Tablas de multiplicar.exe
+C:\Documents and Settings\Administrador\Configuración local\Datos de programa\Temporary Projects\Tablas de multiplicar\obj\Debug\Tablas de multiplicar.xml
+C:\Documents and Settings\Administrador\Configuración local\Datos de programa\Temporary Projects\Tablas de multiplicar\obj\Debug\Tablas de multiplicar.pdb
+C:\Documents and Settings\Administrador\Mis documentos\Tablas de multiplicar\Tablas de multiplicar\obj\Debug\Tablas de multiplicar.exe
+C:\Documents and Settings\Administrador\Mis documentos\Tablas de multiplicar\Tablas de multiplicar\obj\Debug\Tablas de multiplicar.xml
+C:\Documents and Settings\Administrador\Mis documentos\Tablas de multiplicar\Tablas de multiplicar\obj\Debug\Tablas de multiplicar.pdb
+C:\Documents and Settings\Administrador\Mis documentos\Tablas de multiplicar\Tablas de multiplicar\obj\Debug\ResolveAssemblyReference.cache
+C:\Documents and Settings\Administrador\Mis documentos\Tablas de multiplicar\Tablas de multiplicar\obj\Debug\Tablas_de_multiplicar.Form1.resources
+C:\Documents and Settings\Administrador\Mis documentos\Tablas de multiplicar\Tablas de multiplicar\obj\Debug\Tablas_de_multiplicar.Resources.resources
+C:\Documents and Settings\Administrador\Mis documentos\Tablas de multiplicar\Tablas de multiplicar\obj\Debug\Tablas de multiplicar.vbproj.GenerateResource.Cache
+C:\Documents and Settings\Administrador\Mis documentos\Tablas de multiplicar\Tablas de multiplicar\bin\Debug\Tablas de multiplicar.exe
+C:\Documents and Settings\Administrador\Mis documentos\Tablas de multiplicar\Tablas de multiplicar\bin\Debug\Tablas de multiplicar.pdb
+C:\Documents and Settings\Administrador\Mis documentos\Tablas de multiplicar\Tablas de multiplicar\bin\Debug\Tablas de multiplicar.xml

@@ -1,0 +1,4 @@
+C:\Documents and Settings\Usuario\Mis documentos\CALCULADORA\CALCULADORA\obj\Debug\ResolveAssemblyReference.cache
+C:\Documents and Settings\Usuario\Mis documentos\CALCULADORA\CALCULADORA\obj\Debug\CALCULADORA.Form1.resources
+C:\Documents and Settings\Usuario\Mis documentos\CALCULADORA\CALCULADORA\obj\Debug\CALCULADORA.Resources.resources
+C:\Documents and Settings\Usuario\Mis documentos\CALCULADORA\CALCULADORA\obj\Debug\CALCULADORA.vbproj.GenerateResource.Cache

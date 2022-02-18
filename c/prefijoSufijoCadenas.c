@@ -14,7 +14,6 @@ int main(int argc, char *argv[]){
         system("cls");
         printf("\t*************** Equipo 4  2CM11  Practica 2: Prefijo y Sufijo de una Cadena ***************\n\n");
 		printf ("Integrantes:\n");
-		printf ("Cuevas Nava Dilan Mackdiel\n");
 		printf ("Gonzalez Barrientos Geovanni Daniel:\n");
 		printf ("Lopez Ramirez Oscar Ivan\n");
         printf ("\n\n********************** MENU PRINCIPAL *************************\n\n"); 

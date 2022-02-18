@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{F184B08F-C81C-45F6-A57F-5ABD9991F28F}") = "Ecuaciones de 2° grado", "Ecuaciones de 2° grado\Ecuaciones de 2° grado.vbproj", "{EEF42056-321A-4092-82F8-160110096045}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EEF42056-321A-4092-82F8-160110096045}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EEF42056-321A-4092-82F8-160110096045}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EEF42056-321A-4092-82F8-160110096045}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EEF42056-321A-4092-82F8-160110096045}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

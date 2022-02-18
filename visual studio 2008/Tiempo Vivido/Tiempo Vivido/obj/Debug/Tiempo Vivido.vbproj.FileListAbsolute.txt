@@ -1,0 +1,10 @@
+C:\Documents and Settings\Usuario\Mis documentos\Tiempo Vivido\Tiempo Vivido\obj\Debug\ResolveAssemblyReference.cache
+C:\Documents and Settings\Usuario\Mis documentos\Tiempo Vivido\Tiempo Vivido\obj\Debug\Tiempo_Vivido.TIEMPO_VIVIDO.resources
+C:\Documents and Settings\Usuario\Mis documentos\Tiempo Vivido\Tiempo Vivido\obj\Debug\Tiempo_Vivido.Resources.resources
+C:\Documents and Settings\Usuario\Mis documentos\Tiempo Vivido\Tiempo Vivido\obj\Debug\Tiempo Vivido.vbproj.GenerateResource.Cache
+C:\Documents and Settings\Usuario\Mis documentos\Tiempo Vivido\Tiempo Vivido\bin\Debug\Tiempo Vivido.exe
+C:\Documents and Settings\Usuario\Mis documentos\Tiempo Vivido\Tiempo Vivido\bin\Debug\Tiempo Vivido.pdb
+C:\Documents and Settings\Usuario\Mis documentos\Tiempo Vivido\Tiempo Vivido\bin\Debug\Tiempo Vivido.xml
+C:\Documents and Settings\Usuario\Mis documentos\Tiempo Vivido\Tiempo Vivido\obj\Debug\Tiempo Vivido.exe
+C:\Documents and Settings\Usuario\Mis documentos\Tiempo Vivido\Tiempo Vivido\obj\Debug\Tiempo Vivido.xml
+C:\Documents and Settings\Usuario\Mis documentos\Tiempo Vivido\Tiempo Vivido\obj\Debug\Tiempo Vivido.pdb

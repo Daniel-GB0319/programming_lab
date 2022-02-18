@@ -1,0 +1,20 @@
+C:\Documents and Settings\Usuario\Configuración local\Datos de programa\Temporary Projects\Dime quien eres\obj\Debug\ResolveAssemblyReference.cache
+C:\Documents and Settings\Usuario\Configuración local\Datos de programa\Temporary Projects\Dime quien eres\obj\Debug\Dime_quien_eres.Form1.resources
+C:\Documents and Settings\Usuario\Configuración local\Datos de programa\Temporary Projects\Dime quien eres\obj\Debug\Dime_quien_eres.Resources.resources
+C:\Documents and Settings\Usuario\Configuración local\Datos de programa\Temporary Projects\Dime quien eres\obj\Debug\Dime quien eres.vbproj.GenerateResource.Cache
+C:\Documents and Settings\Usuario\Configuración local\Datos de programa\Temporary Projects\Dime quien eres\bin\Debug\Dime quien eres.exe
+C:\Documents and Settings\Usuario\Configuración local\Datos de programa\Temporary Projects\Dime quien eres\bin\Debug\Dime quien eres.pdb
+C:\Documents and Settings\Usuario\Configuración local\Datos de programa\Temporary Projects\Dime quien eres\bin\Debug\Dime quien eres.xml
+C:\Documents and Settings\Usuario\Configuración local\Datos de programa\Temporary Projects\Dime quien eres\obj\Debug\Dime quien eres.exe
+C:\Documents and Settings\Usuario\Configuración local\Datos de programa\Temporary Projects\Dime quien eres\obj\Debug\Dime quien eres.xml
+C:\Documents and Settings\Usuario\Configuración local\Datos de programa\Temporary Projects\Dime quien eres\obj\Debug\Dime quien eres.pdb
+D:\Dime quien eres\Dime quien eres\obj\Debug\Dime quien eres.exe
+D:\Dime quien eres\Dime quien eres\obj\Debug\Dime quien eres.xml
+D:\Dime quien eres\Dime quien eres\obj\Debug\Dime quien eres.pdb
+D:\Dime quien eres\Dime quien eres\bin\Debug\Dime quien eres.exe
+D:\Dime quien eres\Dime quien eres\bin\Debug\Dime quien eres.pdb
+D:\Dime quien eres\Dime quien eres\bin\Debug\Dime quien eres.xml
+D:\Dime quien eres\Dime quien eres\obj\Debug\ResolveAssemblyReference.cache
+D:\Dime quien eres\Dime quien eres\obj\Debug\Dime_quien_eres.Form1.resources
+D:\Dime quien eres\Dime quien eres\obj\Debug\Dime_quien_eres.Resources.resources
+D:\Dime quien eres\Dime quien eres\obj\Debug\Dime quien eres.vbproj.GenerateResource.Cache
