@@ -75,7 +75,7 @@ matriz = [0,0,0,0,0,0,0,0,0] # Declaracion de la Cuadricula
 
 # Aqui el usuario ingresa los valores de cada casilla
 while(True):
-    os.system("cls") # Limpia pantalla 
+    os.system("clear" or "cls") # Limpia pantalla 
     print("\n******* Gonzalez Barrientos Geovanni Daniel 3CV1  Analisis de Algoritmos *******\n")
     print("------- Practica 1 - Sudoku -------\n\n")
     print("INSTRUCCIONES: Este programa resolvera el sudoku de 3x3 casillas a partir de los valores ingresados por el usuario\n\n")
