@@ -3,7 +3,6 @@ import javax.swing.JFileChooser;
 import java.net.*;
 import java.io.*;
 
-
 public class ClienteArchivo {
     public static void main(String [] arc){
         try{
@@ -16,10 +15,13 @@ public class ClienteArchivo {
             Socket cl = new Socket(host,pto);
             
             JFileChooser jf = new JFileChooser();
+            jf.setDialogTitle("Seleccion Multiple de Archivos"); // Establece el titulo de la ventana
+            jf.setMultipleSelectionEnabled(true); // Permite seleccion multiple de archivos
+            jf.setFileSelectionMode(JFileChooser.FILES_ONLY); // Solo aceptara archivos
             int r = jf.showOpenDialog(null);
             
             if(r == JFileChooser.APPROVE_OPTION){
-                File f = jf.getSelectedFile(); // Manejador
+                File[] f = jf.getSelectedFiles(); // Array para almacenar los archivos seleccionados
                 String archivo = f.getAbsolutePath(); // Direccion
                 String nombre = f.getName(); // Nombre
                 long tam = f.length(); // Tamaño
