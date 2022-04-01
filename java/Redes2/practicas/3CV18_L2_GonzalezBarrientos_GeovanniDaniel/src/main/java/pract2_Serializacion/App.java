@@ -1,4 +1,4 @@
-package ejercicio2;
+package pract2_Serializacion;
 import java.net.*;
 import java.io.*;
 
