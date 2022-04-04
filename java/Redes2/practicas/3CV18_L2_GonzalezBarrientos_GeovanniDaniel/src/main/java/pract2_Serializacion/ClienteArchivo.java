@@ -1,10 +1,12 @@
 package pract2_Serializacion;
+import java.awt.HeadlessException;
 import javax.swing.JFileChooser;
 import java.net.*;
 import java.io.*;
 
 public class ClienteArchivo {
-    // Funcion Principal
+    
+// Funcion Principal
     public static void main(String [] arc) throws IOException{
         Socket cl = null; // Inicializa socket cliente
         cl = conexion(cl); // Crea conexion con servidor
@@ -32,27 +34,54 @@ public class ClienteArchivo {
     
     // Funcion para enviar archivos
     public static void enviar(Socket cl){
-        JFileChooser jf = new JFileChooser(); // Se inicializa el selector de archivos
-        jf.setDialogTitle("Seleccione el Archivo que desea enviar ... "); // Establece el titulo de la ventana
-        jf.setMultiSelectionEnabled(true); // Permite seleccion multiple de archivos
-        jf.setFileSelectionMode(JFileChooser.FILES_ONLY); // Solo aceptara archivos
-        System.out.printf("\nA continuacion debera seleccionar los archivos a enviar... ");
-        int r = jf.showOpenDialog(null); // Muestra la ventana del selector
+        Estudiante e1; // Se inicializa la variable de tipo Estudiante
+        e1 = new Estudiante("Daniel",22,2020123456,9.75,"3CV18",true); // Se le asignan valores a e1
+        
+        // Se imprimen los atributos de e1 antes de serializacion
+        System.out.print("\nLos datos de la clase Estudiante son los siguientes:\n");
+        System.out.print("\nNombre: " + e1.nombre);
+        System.out.print("\nEdad: " + e1.edad);
+        System.out.print("\nBoleta: " + e1.boleta);
+        System.out.print("\nCalificaciones: " + e1.calificaciones);
+        System.out.print("\nGrupo: " + e1.grupo);
+        System.out.print("\nInscrito: " + e1.inscrito);
+        
+        // Se realiza procedimiento de serializacion
+        try{
+            BufferedReader entrada;
+            // Se inicializa flujo de salida para el objeto que residira en un archivo de texto
+            try (FileOutputStream fout = new FileOutputStream("ejemplo.txt"); ObjectOutputStream out = new ObjectOutputStream(fout)) {
+                out.writeObject(e1); // Se almacena objeto serializado en fichero
+                System.out.println("\n!!! Objeto Serializado !!!");
+                System.out.println("\nContenido dentro del nuevo fichero con el objeto serializado\n");
+                entrada = new BufferedReader(new FileReader(new File("ejemplo.txt")));
+                String ejemplo = null;
+                while( (ejemplo = entrada.readLine()) != null){
+                    System.out.println(ejemplo + "\n");
+                }   out.flush();
+            }
+            entrada.close();
+            
+            // Se inicia procedimiento para realizar el envio del fichero con objeto serializado
+            JFileChooser jf = new JFileChooser(); // Se inicializa el selector de archivos
+            jf.setDialogTitle("Seleccione el Archivo que desea enviar ... "); // Establece el titulo de la ventana
+            jf.setFileSelectionMode(JFileChooser.FILES_ONLY); // Solo aceptara archivos
+            System.out.printf("\nA continuacion debera seleccionar el archivos a enviar... ");
+            int r = jf.showOpenDialog(null); // Muestra la ventana del selector
 
-        if(r == JFileChooser.APPROVE_OPTION){ // Procedimiento cuando se haya confirmado los archivos a enviar
-            File[] f = jf.getSelectedFiles(); // Array para almacenar los archivos seleccionados
-            long tam = f.length; // Total de los Archivos a enviar
-            int i = 0;
-                try{
-                    DataOutputStream dos = new DataOutputStream(cl.getOutputStream()); // Se inicializa el flujo de salida
-                    DataInputStream dis; // Se declara el que sera el flujo de entrada    
-                    System.out.printf("\nEspere mientras enviamos los archivos...  \n");
-                    dos.writeLong(tam); // Envia numero de archivos seleccionados
-                    dos.flush();
+            if(r == JFileChooser.APPROVE_OPTION){ // Procedimiento cuando se haya confirmado los archivos a enviar
+                File f = jf.getSelectedFile(); // Variable para almacenar los archivos seleccionados
+                long tam = f.length(); // Total de los Archivos a enviar
+                    try{
+                        DataOutputStream dos = new DataOutputStream(cl.getOutputStream()); // Se inicializa el flujo de salida
+                        DataInputStream dis; // Se declara el que sera el flujo de entrada    
+                        System.out.printf("\nEspere mientras enviamos los archivos...  \n");
+                        dos.writeLong(tam); // Envia numero de archivos seleccionados
+                        dos.flush();
 
-                    for(i = 0; i < tam ; i++){ // Bucle para enviar cada uno de los archivos seleccionados
-                        String pathArch = f[i].getAbsolutePath(); // Almacena la ruta absoluta del archivo a enviar
-                        String nameArch = f[i].getName() ; // Almacena el nombre del archivo a enviar
+
+                        String pathArch = f.getAbsolutePath(); // Almacena la ruta absoluta del archivo a enviar
+                        String nameArch = f.getName() ; // Almacena el nombre del archivo a enviar
 
                         dis = new DataInputStream(new FileInputStream(pathArch)); // Inicializa el flujo de entrada
                         dos.writeUTF(pathArch); // Envia la ruta absoluta del archivo seleccionado al servidor
@@ -65,7 +94,7 @@ public class ClienteArchivo {
                         long enviados = 0;
                         int porcentaje;
                         int n = 0;
-                        
+
                         while(enviados<tam){ // Bucle para enviar bytes
                             n = dis.read(b);
                             dos.write(b,0,n);
@@ -77,11 +106,16 @@ public class ClienteArchivo {
                         } // Termina while
                         System.out.print("\n!!! Archivo " + nameArch + " Enviado !!!\n");
                         //dis.close();
-                    } //termina for
-                 
-                }catch (IOException e){
-                }// Termina catch
-        } // Termina if jFile
+
+                    }catch (IOException e){
+                    }// Termina catch Envio archivos
+            }// Termina if jFile
+
+        }catch(HeadlessException | IOException e){
+        
+        }
+        
+         
     }
 
     // Funcion para finalizar conexion con servidor
