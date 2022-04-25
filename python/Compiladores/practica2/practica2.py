@@ -1,6 +1,15 @@
 import ply.lex as lex
 import os
 
+#Funcion para limpiar la pantalla de la terminal
+def borrarPantalla():  
+	if os.name == "posix":
+		os.system ("clear")
+	elif os.name == "ce" or os.name == "nt" or os.name == "dos":
+		os.system ("cls")
+
+##### ESTRUCTURA DEL ANALIZADOR LEXICO #####
+		
 # Declaracion de tokens
 tokens = (
 	'ID', 'NUMERO', 
@@ -30,7 +39,7 @@ lexer = lex.lex()
 
 ##### PROGRAMA PRINCIPAL #####
 while True:
-	os.system("clear")
+	borrarPantalla()
 	print("***** Practica 2 - Analizador Lexico *****\n")
 	print("INSTRUCCIONES: Este programa evaluara una cadena con un analizador lexico y mostrara los tokens generados para cada elemento.\n")
 	
