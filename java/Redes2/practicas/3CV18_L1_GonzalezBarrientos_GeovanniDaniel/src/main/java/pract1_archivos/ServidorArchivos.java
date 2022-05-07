@@ -1,8 +1,8 @@
-package ejercicio2;
+package pract1_archivos;
 import java.net.*;
 import java.io.*;
 
-public class App{
+public class ServidorArchivos{
     // Funcion Principal
     public static void main(String [] arc){
         try{

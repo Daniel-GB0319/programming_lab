@@ -1,9 +1,9 @@
-package ejercicio2;
+package pract1_archivos;
 import javax.swing.JFileChooser;
 import java.net.*;
 import java.io.*;
 
-public class ClienteArchivo {
+public class ClienteArchivos {
     // Funcion Principal
     public static void main(String [] arc) throws IOException{
         Socket cl = null; // Inicializa socket cliente
@@ -34,6 +34,7 @@ public class ClienteArchivo {
     public static void enviar(Socket cl){
         JFileChooser jf = new JFileChooser(); // Se inicializa el selector de archivos
         jf.setDialogTitle("Seleccione el Archivo que desea enviar ... "); // Establece el titulo de la ventana
+        jf.setCurrentDirectory(new File("."));
         jf.setMultiSelectionEnabled(true); // Permite seleccion multiple de archivos
         jf.setFileSelectionMode(JFileChooser.FILES_ONLY); // Solo aceptara archivos
         System.out.printf("\nA continuacion debera seleccionar los archivos a enviar... ");
@@ -51,7 +52,7 @@ public class ClienteArchivo {
                     dos.flush();
 
                     for(i = 0; i < tam ; i++){ // Bucle para enviar cada uno de los archivos seleccionados
-                        String pathArch = f[i].getAbsolutePath(); // Almacena la ruta absoluta del archivo a enviar
+                        String pathArch = f[i].getCanonicalPath(); // Almacena la ruta absoluta del archivo a enviar
                         String nameArch = f[i].getName() ; // Almacena el nombre del archivo a enviar
 
                         dis = new DataInputStream(new FileInputStream(pathArch)); // Inicializa el flujo de entrada

@@ -1,4 +1,4 @@
-package pract3;
+package pract3_UDP;
 import java.net.*;
 import java.io.*;
 

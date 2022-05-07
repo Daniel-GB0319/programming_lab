@@ -4,7 +4,7 @@ import javax.swing.JFileChooser;
 import java.net.*;
 import java.io.*;
 
-public class ClienteArchivo {
+public class ClienteSerializacion {
     
 // Funcion Principal
     public static void main(String [] arc) throws IOException{

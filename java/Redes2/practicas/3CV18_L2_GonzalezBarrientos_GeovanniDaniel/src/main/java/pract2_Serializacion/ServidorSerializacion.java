@@ -2,7 +2,7 @@ package pract2_Serializacion;
 import java.net.*;
 import java.io.*;
 
-public class App{
+public class ServidorSerializacion{
     // Funcion Principal
     public static void main(String [] arc) throws ClassNotFoundException{
         try{
