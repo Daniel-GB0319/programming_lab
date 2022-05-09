@@ -10,15 +10,15 @@ public class ServidorCarrito {
         try{
             ServerSocket s = new ServerSocket(3080); // Inicia el servidor
             Socket cl = null;
-            System.out.println("##### Practica 1 - Carrito de Compras #####\n");
+            System.out.println("                          ##### Practica 1 - Carrito de Compras #####\n");
             System.out.println("----- Gonzalez Barrientos Geovanni Daniel 3CV18 Aplicaciones para Comunicaciones en Red -----\n\n");
 
-            System.out.println("**** SERVIDOR INICIADO (" + s.getInetAddress() + " : " + s.getLocalPort() + " ) ****\n");
+            System.out.println("**** SERVIDOR INICIADO (Puerto: " + s.getLocalPort() + " ) ****\n");
             System.out.println("Esperando un cliente... \n");
 
             while(true){ // Menu Principal del servidor
                 cl = s.accept(); // Inicializa el socket para atender al cliente
-                System.out.println("*** CONEXION ESTABLECIDA DESDE " + cl.getInetAddress() + " : " + cl.getPort() + " ***\n");
+                System.out.println("*** CONEXION ESTABLECIDA CON CLIENTE DESDE " + cl.getInetAddress() + " : " + cl.getPort() + " ***\n");
                 atenderCliente(cl);
                 cl.close(); // Funcion para finalizar conexion con cliente
                 System.out.print("*** CONEXION CON CLIENTE FINALIZADA ***\n");
@@ -33,47 +33,86 @@ public class ServidorCarrito {
         try{
             Producto[] list = new Producto[20]; // Se crea array para gestionar el catalogo internamente
             for(int i=0;i<list.length;i++){ // Se inicializa el arreglo con valores predeterminados
-                list[i] = new Producto(0,"",0,0);
+                list[i] = new Producto(0,"",0,0,"");
             }
+            list = readCatalogo(list); // Obtiene el catalogo desde el fichero
             
-            list = readCatalogo(list);
-            
-            // Se inicializa flujo de salida para el objeto que residira en un archivo de texto
-            FileOutputStream fout = new FileOutputStream("catalogoCliente.txt"); 
+            // Se inicializa flujo de salida para el objeto serializado que residira en un archivo de texto
+            FileOutputStream fout = new FileOutputStream(new File("./Servidor/archCatalogoCliente.txt")); 
             ObjectOutputStream oos = new ObjectOutputStream(fout); 
             oos.writeObject(list); // Se almacena objeto serializado en fichero
-            System.out.println("\n!!! Catalogo leido y serializado en catalogoCliente.txt !!!"); 
             oos.flush();
           
-            enviarCatalogo(cl);
+            enviarCatalogo(cl); // Envia el catalogo al cliente
             
-            recibirCatalogo(cl);
+            System.out.print("Esperando a que cliente finalice su conexion... \n");
+            recibirCatalogo(cl); // Recibe el catalogo actualizado cuando cliente se ha desconectado
             
-            // Se inicializan los flujos de entrada para deserializar el objeto
-            FileInputStream fin = new FileInputStream("catalogoCliente.txt"); 
+            // Se inicializan los flujos de entrada para deserializar el objeto catalogo recibido del cliente
+            FileInputStream fin = new FileInputStream(new File("./Servidor/archCatalogoCliente.txt")); 
             ObjectInputStream ois = new ObjectInputStream(fin);
             list = (Producto[]) ois.readObject();
 
-            // Se imprime en consola los atributos del objeto deserializado
-            System.out.println("\n!!! Objeto Deserializado !!!");
-            writeCatalogo(list);
+            writeCatalogo(list); // Funcion para actualizar el fichero catalogo
             
         }catch(IOException | ClassNotFoundException e){
         }// catch
-    }// enviarCatalogo
+    }// atenderCliente
 
+    
+    // Funcion para leer el catalogo de productos desde el fichero
+    public static Producto[] readCatalogo(Producto[] list){
+        try{
+            try (BufferedReader fin = new BufferedReader(new FileReader(new File("./Servidor/archCatalogo.txt"))) // Se realiza la lectura desde el fichero
+            ) {
+                if (! (new File("./Servidor/archCatalogo.txt")).exists()){ // Verifica existencia de fichero catalogo
+                    System.out.println("!!! No se ha podido acceder a \"archCatalogo.txt\" ");
+                    
+                }else{
+                    String line = null;
+                    int i = 0; // Auxiliar para recorrido del array
+                    
+                    line = fin.readLine();
+                    while(line != null){ // Bucle para llenar los datos hasta llegar al final de fichero
+                        list[i].id = Integer.parseInt(line); // Ingresa el id
+                        
+                        line = fin.readLine();
+                        list[i].name = line; // Ingresa el nombre
+                        
+                        line = fin.readLine();
+                        list[i].price = Float.parseFloat(line); // Ingresa el precio
+                        
+                        line = fin.readLine();
+                        list[i].stock = Integer.parseInt(line); // Ingresa la cantidad existente
+                        
+                        line = fin.readLine();
+                        list[i].description = line; // Ingresa la descripcion
+                        
+                        fin.readLine(); // Elimina la linea en blanco   
+                       
+                        /*System.out.print("ID del producto: " + list[i].id + "\nNombre del Producto: " + list[i].name + "\n");
+                        System.out.print("Precio del Producto: " + list[i].price + "\nCantidad Disponible: " + list[i].stock + "\n");
+                        System.out.print("Descripcion: " + list[i].description + "\n\n");*/
+                        
+                        line = fin.readLine(); // Busca el id de otro producto
+                        i++;  
+                    }// while
+                    return list;
+                }// else
+            }
+        }catch(IOException | NumberFormatException e){
+        }// catch
+        return list;
+    }// readCatalogo
+    
     
     public static void enviarCatalogo(Socket cl){
         // Se inicia procedimiento para realizar el envio de ficheros
-        //File[] arch = null;
-        //arch.;
         JFileChooser jf = new JFileChooser(); // Se inicializa el selector de archivos
-        
         jf.setCurrentDirectory(new File("."));
-        //jf.setSelectedFiles(arch);
         jf.setMultiSelectionEnabled(true); // Permite seleccion multiple de archivos
         jf.setFileSelectionMode(JFileChooser.FILES_ONLY); // Solo aceptara archivos
-        System.out.printf("\nA continuacion debera seleccionar los archivos a enviar... ");
+        System.out.printf("\nA continuacion debera seleccionar los archivos a enviar al cliente... ");
         int r = jf.showOpenDialog(null); // Muestra la ventana del selector
 
         if(r == JFileChooser.APPROVE_OPTION){ // Procedimiento cuando se haya confirmado los archivos a enviar
@@ -91,14 +130,14 @@ public class ServidorCarrito {
                     String pathArch = f[i].getAbsolutePath(); // Almacena la ruta absoluta del archivo a enviar
                     String nameArch = f[i].getName() ; // Almacena el nombre del archivo a enviar
 
-                    dis = new DataInputStream(new FileInputStream(pathArch)); // Inicializa el flujo de entrada
+                    dis = new DataInputStream(new FileInputStream(new File(pathArch))); // Inicializa el flujo de entrada
                     dos.writeUTF(pathArch); // Envia la ruta absoluta del archivo seleccionado al servidor
                     dos.flush();
 
                     dos.writeUTF(nameArch); // Envia el nombre del archivo seleccionado al servidor
                     dos.flush();
 
-                    byte[] b = new byte[1024];
+                    byte[] b = new byte[524288]; // 100 KB
                     long enviados = 0;
                     int porcentaje;
                     int n = 0;
@@ -112,7 +151,7 @@ public class ServidorCarrito {
                         porcentaje = (int)((enviados*10)/tam);
                         System.out.print("\nEnviado: " + porcentaje + "%\r");
                     } // Termina while
-                    System.out.print("\n!!! Archivo " + nameArch + " Enviado !!!\n");
+                    System.out.print("!!! Archivo " + nameArch + " enviado al cliente !!!\n");
                     //dis.close();
                 } //termina for
             }catch (IOException e){
@@ -123,7 +162,7 @@ public class ServidorCarrito {
     public static void recibirCatalogo(Socket cl){
         String nameArchivos; // Variable para almacenar el nombre de los archivos entrantes
         String directorio; // Variable para almacenar la ruta absoluta de los archivos entrantes
-        byte[] b = new byte[1024];
+        byte[] b = new byte[524288];
 
         try{
             DataInputStream dis = new DataInputStream(cl.getInputStream()); // Se inicializa el flujo de entrada 
@@ -136,7 +175,7 @@ public class ServidorCarrito {
                 nameArchivos = dis.readUTF(); // Se recibe el nombre del archivo entrante 
                 System.out.println("\n!!! El Cliente desea enviar: " + nameArchivos + " desde " + directorio + " !!!");
 
-                dos = new DataOutputStream(new FileOutputStream(directorio)); // Se inicializa el flujo de salida 
+                dos = new DataOutputStream(new FileOutputStream(new File(directorio))); // Se inicializa el flujo de salida 
                 long recibidos = 0;
                 int n = 0;
                 int porcentaje;
@@ -155,73 +194,39 @@ public class ServidorCarrito {
         }catch(IOException e){
         } // Termina catch
     }// recibirCatalogo
-    
-    // Funcion para leer el catalogo de productos desde el fichero
-    public static Producto[] readCatalogo(Producto[] list){
-        try{
-            try (BufferedReader fin = new BufferedReader(new FileReader(new File("catalogo.txt"))) // Se realiza la lectura desde el fichero
-            ) {
-                if (! (new File("catalogo.txt")).exists()){ // Verifica existencia de fichero catalogo
-                    System.out.println("!!! No se ha podido acceder a \"catalogo.txt\" ");
-                    System.exit(0);
-                }else{
-                    String line = null;
-                    int i = 0; // Auxiliar para recorrido del array
-                    
-                    line = fin.readLine();
-                    while(line != null){ // Bucle para llenar los datos hasta llegar al final de fichero
-                        list[i].setID(Integer.parseInt(line)); // Ingresa el id
-                        
-                        line = fin.readLine();
-                        list[i].setName(line); // Ingresa el nombre
-                        
-                        line = fin.readLine();
-                        list[i].setPrice(Float.parseFloat(line)); // Ingresa el precio
-                        
-                        line = fin.readLine();
-                        list[i].setStock(Integer.parseInt(line)); // Ingresa la cantidad existente
-                        
-                        fin.readLine(); // Elimina la linea en blanco
-                        line = fin.readLine(); // Busca el id de otro producto
-                        i++;  
-                    }// while
-                    return list;
-                }// else
-            }
-        }catch(IOException | NumberFormatException e){
-        }// catch
-        return list;
-    }// readCatalogo
  
     
-    // Funcion para escribir el catalogo de productos en el fichero
+    // Funcion para escribir el catalogo de productos actualizado en el fichero
     public static void writeCatalogo(Producto[] list){
         try{
             int i = 0; // Auxiliar para recorrido del array
-            try (BufferedWriter fout = new BufferedWriter(new FileWriter(new File("catalogo.txt"))) // Se realiza la lectura desde el fichero
-            ) {
-                if (! (new File("catalogo.txt")).exists()){ // Verifica existencia de fichero catalogo
-                    System.out.println("!!! No se ha podidio acceder a \"catalogo.txt\" ");
+            try ( BufferedWriter fout = new BufferedWriter(new FileWriter(new File("./Servidor/archCatalogo.txt"))) ){ // Se realiza la lectura desde el fichero
+                if (! (new File("./Servidor/archCatalogo.txt")).exists()){ // Verifica existencia de fichero catalogo
+                    System.out.println("!!! No se ha podido acceder a \"archCatalogo.txt\" ");
                     System.exit(0);
                     
-                }else{
+                }else{ // Se ha accedido correctamente al catalogo
                     for(i=0; i<list.length; i++){ // Bucle para llenar los datos hasta llegar al final de fichero
-                        fout.write(list[i].id);
-                        fout.newLine();
-                        
-                        fout.write(list[i].name);
-                        fout.newLine();
-                        
-                        fout.write( String.valueOf(list[i].price));
-                        fout.newLine();
-                        
-                        fout.write(list[i].stock);  
-                        fout.newLine();
-                        fout.newLine();
+                        if(list[i].id >= 100){
+                            fout.write(String.valueOf(list[i].id)); // Escribe el ID en fichero
+                            fout.newLine();
+
+                            fout.write(list[i].name); // Escribe el nombre de producto en fichero
+                            fout.newLine();
+
+                            fout.write( String.valueOf(list[i].price)); // Escribe el precio de producto en fichero
+                            fout.newLine();
+
+                            fout.write(String.valueOf(list[i].stock)); // Escribe cantidad del producto en fichero
+                            fout.newLine();
+                            
+                            fout.write(list[i].description); // Escribe descripcion de producto en fichero
+                            fout.newLine();
+                            fout.newLine(); // 
+                        }// if
                     }// for
                 }// else
-            }
-            
+            }           
         }catch(IOException | NumberFormatException e){
         }// catch
     } // writeCatalogo

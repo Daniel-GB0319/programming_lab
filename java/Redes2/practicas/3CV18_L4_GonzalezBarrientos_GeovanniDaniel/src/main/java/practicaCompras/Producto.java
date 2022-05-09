@@ -6,27 +6,13 @@ public class Producto implements Serializable {
     String name;
     float price;
     int stock;
+    String description;
    
-    public Producto(int id,String name,float price,int stock){
+    public Producto(int id,String name,float price,int stock,String description){
        this.id = id;
        this.name = name;
        this.price = price;
-       this.stock = stock;   
-    }
-    
-    public void setID(int id){
-       this.id = id;
-    }
-    
-    public void setName(String name){
-       this.name = name;
-    }
-    
-    public void setPrice(float price){
-       this.price = price;
-   }
-    
-    public void setStock(int stock){
        this.stock = stock;
+       this.description = description;
     }
 }
