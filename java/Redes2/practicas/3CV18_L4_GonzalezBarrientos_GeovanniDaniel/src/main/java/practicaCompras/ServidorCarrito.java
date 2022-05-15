@@ -14,7 +14,7 @@ public class ServidorCarrito {
             System.out.println("----- Gonzalez Barrientos Geovanni Daniel 3CV18 Aplicaciones para Comunicaciones en Red -----\n\n");
 
             System.out.println("**** SERVIDOR INICIADO (Puerto: " + s.getLocalPort() + " ) ****\n");
-            System.out.println("Esperando un cliente... \n");
+            System.out.println("Esperando un cliente... ");
 
             while(true){ // Menu Principal del servidor
                 cl = s.accept(); // Inicializa el socket para atender al cliente
@@ -38,7 +38,7 @@ public class ServidorCarrito {
             list = readCatalogo(list); // Obtiene el catalogo desde el fichero
             
             // Se inicializa flujo de salida para el objeto serializado que residira en un archivo de texto
-            FileOutputStream fout = new FileOutputStream(new File("./Servidor/archCatalogoCliente.txt")); 
+            FileOutputStream fout = new FileOutputStream(new File("./Servidor/archCatalogoCliente.txt")); // Se indica el path del nuevo archivo
             ObjectOutputStream oos = new ObjectOutputStream(fout); 
             oos.writeObject(list); // Se almacena objeto serializado en fichero
             oos.flush();
@@ -60,7 +60,7 @@ public class ServidorCarrito {
     }// atenderCliente
 
     
-    // Funcion para leer el catalogo de productos desde el fichero
+    // Funcion para leer el catalogo de productos desde el fichero base
     public static Producto[] readCatalogo(Producto[] list){
         try{
             try (BufferedReader fin = new BufferedReader(new FileReader(new File("./Servidor/archCatalogo.txt"))) // Se realiza la lectura desde el fichero
@@ -109,7 +109,7 @@ public class ServidorCarrito {
     public static void enviarCatalogo(Socket cl){
         // Se inicia procedimiento para realizar el envio de ficheros
         JFileChooser jf = new JFileChooser(); // Se inicializa el selector de archivos
-        jf.setCurrentDirectory(new File("."));
+        jf.setCurrentDirectory(new File("./Servidor"));
         jf.setMultiSelectionEnabled(true); // Permite seleccion multiple de archivos
         jf.setFileSelectionMode(JFileChooser.FILES_ONLY); // Solo aceptara archivos
         System.out.printf("\nA continuacion debera seleccionar los archivos a enviar al cliente... ");
@@ -129,31 +129,36 @@ public class ServidorCarrito {
                 for(i = 0; i < tam ; i++){ // Bucle para enviar cada uno de los archivos seleccionados
                     String pathArch = f[i].getAbsolutePath(); // Almacena la ruta absoluta del archivo a enviar
                     String nameArch = f[i].getName() ; // Almacena el nombre del archivo a enviar
-
+                    long paquete = f[i].length();
+                    
                     dis = new DataInputStream(new FileInputStream(new File(pathArch))); // Inicializa el flujo de entrada
+          
                     dos.writeUTF(pathArch); // Envia la ruta absoluta del archivo seleccionado al servidor
                     dos.flush();
 
                     dos.writeUTF(nameArch); // Envia el nombre del archivo seleccionado al servidor
                     dos.flush();
 
-                    byte[] b = new byte[524288]; // 100 KB
+                    dos.writeLong(paquete); // Envia el nombre del archivo seleccionado al servidor
+                    dos.flush();
+                    byte[] b = new byte[1024]; // 100 KB
                     long enviados = 0;
-                    int porcentaje;
+                    int porcentaje = 0;
                     int n = 0;
 
-                    while(enviados<tam){ // Bucle para enviar bytes
+                    while(enviados<paquete){ // Bucle para enviar bytes
                         n = dis.read(b);
                         dos.write(b,0,n);
                         dos.flush();
 
                         enviados = enviados + n;
-                        porcentaje = (int)((enviados*10)/tam);
+                        porcentaje = (int)((enviados*100)/paquete);
                         System.out.print("\nEnviado: " + porcentaje + "%\r");
                     } // Termina while
                     System.out.print("!!! Archivo " + nameArch + " enviado al cliente !!!\n");
-                    //dis.close();
+                    dos.flush();
                 } //termina for
+                //dis.close();
             }catch (IOException e){
             }// Termina catch
         } // Termina if jFile
@@ -162,35 +167,50 @@ public class ServidorCarrito {
     public static void recibirCatalogo(Socket cl){
         String nameArchivos; // Variable para almacenar el nombre de los archivos entrantes
         String directorio; // Variable para almacenar la ruta absoluta de los archivos entrantes
-        byte[] b = new byte[524288];
+        byte[] b = new byte[1024];
 
         try{
-            DataInputStream dis = new DataInputStream(cl.getInputStream()); // Se inicializa el flujo de entrada 
+            DataInputStream dis = new DataInputStream(cl.getInputStream()); // Se inicializa el flujo de entrada
             DataOutputStream dos; // Se declara el que sera el flujo de salida
             long tam = dis.readLong(); // Se lee la cantidad de archivos que enviara el cliente
-            long i = 0;
+            long i = 0 , paquete = 0;
 
             while(i < tam){ // Bucle para recibir cada uno de los archivos del cliente
                 directorio = dis.readUTF(); // Se recibe la ruta absoluta del archivo entrante
                 nameArchivos = dis.readUTF(); // Se recibe el nombre del archivo entrante 
+                paquete = dis.readLong();
+                
                 System.out.println("\n!!! El Cliente desea enviar: " + nameArchivos + " desde " + directorio + " !!!");
-
-                dos = new DataOutputStream(new FileOutputStream(new File(directorio))); // Se inicializa el flujo de salida 
+                
+                // Se inicializa el flujo de salida, indicando el path donde seran escritos los archivos recibidos
+                dos = new DataOutputStream(new FileOutputStream(new File("./Servidor/" + nameArchivos)));  
                 long recibidos = 0;
                 int n = 0;
-                int porcentaje;
-
-                while(recibidos<tam){ // Bucle para la transeferencia de bytes 
+                int porcentaje = 0;
+                                                     
+                for(long j = 0; j<paquete/1024;j++){ // Bucle para la transeferencia de bytes 
                     n = dis.read(b);
                     dos.write(b,0,n);
                     dos.flush();
                     recibidos = recibidos + n;
-                    porcentaje = (int)((recibidos*10)/tam);
-                    System.out.print("Recibido: " + porcentaje + "%\r");
-                } // Termina while
+                    porcentaje = (int)((recibidos*10)/paquete);
+                    
+                } // Termina for
+                if(paquete%1024!=0){ 
+                    b = new byte [(int)paquete%1024];
+                    n = dis.read(b);
+                    dos.write(b,0,n);
+                    dos.flush();
+                    recibidos = recibidos+n;
+                    porcentaje = (int)(recibidos*100/paquete);
+                }
+                System.out.print("Recibido: " + porcentaje + "%\r");
+                
                 System.out.print("\n!!! Archivo " + nameArchivos + " Recibido !!!\n");
                 i= i+1;
+                dos.flush();
             } // termina while
+            dis.close();
         }catch(IOException e){
         } // Termina catch
     }// recibirCatalogo
@@ -230,4 +250,5 @@ public class ServidorCarrito {
         }catch(IOException | NumberFormatException e){
         }// catch
     } // writeCatalogo
-}
+    
+}// Servidor carrito
