@@ -1,4 +1,4 @@
-package practicaCompras;
+package practicacarrito;
 import java.awt.*;
 import java.io.*;
 import java.net.*;

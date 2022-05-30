@@ -1,0 +1,17 @@
+################### TICKET DE COMPRA ###################
+
+
+
+Fecha de Compra: 22/May/22 22:03:49
+
+ID: 103
+Producto: Mochila
+Precio Unitario: $65.0
+Cantidad: 1
+Descripcion: Te permite transportar todo lo necesario para tus clases.
+Subtotal: $65.0
+
+Total de la compra: $65.0
+
+############## !!! Gracias por su compra !!! ################
+

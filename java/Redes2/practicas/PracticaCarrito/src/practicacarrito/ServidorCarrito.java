@@ -1,4 +1,4 @@
-package practicaCompras;
+package practicacarrito;
 import java.io.*;
 import java.net.*;
 import javax.swing.JFileChooser;
