@@ -12,7 +12,7 @@ import com.itextpdf.layout.element.Paragraph;
 
 public class ClienteCarrito {
 // Funcion Principal
-    public static void main(String [] arc) throws IOException{        
+    public static void main(String [] arc) throws IOException, ClassNotFoundException{        
         try{
             Socket cl = null;
             BufferedReader br = new BufferedReader(new InputStreamReader(System.in)); // Se inicializa buffer para leer datos desde teclado
@@ -37,7 +37,7 @@ public class ClienteCarrito {
     
     
     // Funcion para enviar archivos
-    public static void menuCliente(Socket cl){
+    public static void menuCliente(Socket cl) throws ClassNotFoundException{
         try{
             BufferedReader br = new BufferedReader(new InputStreamReader(System.in)); // Buffer para realizar lecturas desde teclado
             int menu, opcion, opcion2, opcion3, i;
@@ -51,7 +51,8 @@ public class ClienteCarrito {
                 catalogo[i] = new Producto(0,"",0,0,"");
                 carrito[i] = new Producto(0,"",0,0,"");
             }
-            catalogo = downloadCatalogo(cl, catalogo); // se descarga el catalogo y se asigna al arreglo
+            // se descarga el catalogo y se asigna al arreglo
+            catalogo = downloadCatalogo(cl, catalogo); 
             
             do{// Menu principal del cliente
                 
@@ -430,6 +431,7 @@ public class ClienteCarrito {
                 }// switch menu principal
                 
             }while(menu != 0);// while menu principal
+            
             uploadCatalogo(cl, catalogo); // Se actualiza catalogo y se envia al servidor
 
         }catch(IOException | NumberFormatException e){
@@ -467,7 +469,7 @@ public class ClienteCarrito {
     
     
     // Funcion para descargar el catalogo de productos desde el fichero serializado
-    public static Producto[] downloadCatalogo(Socket cl, Producto[] catalogo){
+    public static Producto[] downloadCatalogo(Socket cl, Producto[] catalogo) throws ClassNotFoundException{
         try{        
             String nameArchivos; // Variable para almacenar el nombre de los archivos entrantes
             String directorio; // Variable para almacenar la ruta absoluta de los archivos entrantes
@@ -511,46 +513,43 @@ public class ClienteCarrito {
                     i= i+1;
                     dos.flush();
                 } // termina while
-             // Se declara el que sera el flujo de salida
-            
+             
             // Se inicializan los flujos de entrada para deserializar el objeto
             FileInputStream fin = new FileInputStream(new File("./Cliente/archCatalogoCliente.txt")); 
             ObjectInputStream in = new ObjectInputStream(fin);
             catalogo = (Producto[]) in.readObject();
             
             return catalogo;
-        }catch(IOException | ClassNotFoundException e){  
+        }catch(IOException e){  
         }// catch
         return catalogo;
     }// downloadCatalogo
  
     
     // Funcion para escribir el catalogo de productos en el fichero
-    public static void uploadCatalogo(Socket cl, Producto[] catalogo){
-        try{
-            // Se inicializa flujo de salida para el objeto que residira en un archivo de texto
-            FileOutputStream fout = new FileOutputStream(new File("./Cliente/archCatalogoCliente.txt")); 
-            ObjectOutputStream oos = new ObjectOutputStream(fout); 
-            oos.writeObject(catalogo); // Se almacena objeto serializado en fichero 
-            oos.flush();
-            
-             // Se inicia procedimiento para realizar el envio de ficheros
-            JFileChooser jf = new JFileChooser(); // Se inicializa el selector de archivos
-            jf.setDialogTitle("Seleccione el archivo \" archCatalogoCliente.txt \" para enviar al servidor ... "); // Establece el titulo de la ventana
-            jf.setCurrentDirectory(new File("./Cliente"));
-            jf.setMultiSelectionEnabled(false); // Permite seleccion multiple de archivos
-            jf.setFileSelectionMode(JFileChooser.FILES_ONLY); // Solo aceptara archivos
-            System.out.printf("\nA continuacion debera seleccionar el archivo \" archCatalogoCliente.txt \" para enviar al servidor ... ");
-            int r = jf.showOpenDialog(null); // Muestra la ventana del selector
+    public static void uploadCatalogo(Socket cl, Producto[] catalogo) throws IOException{
+         // Se inicializa flujo de salida para el objeto que residira en un archivo de texto
+        FileOutputStream fout = new FileOutputStream(new File("./Cliente/archCatalogoCliente.txt")); 
+        ObjectOutputStream oos = new ObjectOutputStream(fout); 
+        oos.writeObject(catalogo); // Se almacena objeto serializado en fichero 
+        oos.flush();
 
-            if(r == JFileChooser.APPROVE_OPTION){ // Procedimiento cuando se haya confirmado los archivos a enviar
-                File[] f = jf.getSelectedFiles(); // Array para almacenar los archivos seleccionados
-                long tam = f.length; // Total de los Archivos a enviar
-                int i = 0;
-                
+        // Se inicia procedimiento para realizar el envio de ficheros
+        JFileChooser jf = new JFileChooser(); // Se inicializa el selector de archivos
+        jf.setCurrentDirectory(new File("./Cliente"));
+        jf.setMultiSelectionEnabled(true); // Permite seleccion multiple de archivos
+        jf.setFileSelectionMode(JFileChooser.FILES_ONLY); // Solo aceptara archivos
+        System.out.printf("\nA continuacion debera seleccionar los archivos a enviar al cliente... ");
+        int r = jf.showOpenDialog(null); // Muestra la ventana del selector
+
+        if(r == JFileChooser.APPROVE_OPTION){ // Procedimiento cuando se haya confirmado los archivos a enviar
+            File[] f = jf.getSelectedFiles(); // Array para almacenar los archivos seleccionados
+            long tam = f.length; // Total de los Archivos a enviar
+            int i = 0;
+            try{
                 DataOutputStream dos = new DataOutputStream(cl.getOutputStream()); // Se inicializa el flujo de salida
-                DataInputStream dis; // Se declara el que sera el flujo de entrada    
-                System.out.printf("\nEspere mientras enviamos el archivo al servidor...  \n");
+                DataInputStream dis = null; // Se declara el que sera el flujo de entrada    
+                System.out.printf("\nEspere mientras enviamos los archivos...  \n");
                 dos.writeLong(tam); // Envia numero de archivos seleccionados
                 dos.flush();
 
@@ -560,15 +559,18 @@ public class ClienteCarrito {
                     long paquete = f[i].length();
                     
                     dis = new DataInputStream(new FileInputStream(new File(pathArch))); // Inicializa el flujo de entrada
+          
                     dos.writeUTF(pathArch); // Envia la ruta absoluta del archivo seleccionado al servidor
                     dos.flush();
 
                     dos.writeUTF(nameArch); // Envia el nombre del archivo seleccionado al servidor
                     dos.flush();
 
-                    byte[] b = new byte[1024]; // 100KB
+                    dos.writeLong(paquete); // Envia el nombre del archivo seleccionado al servidor
+                    dos.flush();
+                    byte[] b = new byte[1024]; // 100 KB
                     long enviados = 0;
-                    int porcentaje;
+                    int porcentaje = 0;
                     int n = 0;
 
                     while(enviados<paquete){ // Bucle para enviar bytes
@@ -577,17 +579,17 @@ public class ClienteCarrito {
                         dos.flush();
 
                         enviados = enviados + n;
-                        porcentaje = (int)((enviados*10)/paquete);
+                        porcentaje = (int)((enviados*100)/paquete);
                         System.out.print("\nEnviado: " + porcentaje + "%\r");
                     } // Termina while
-                    System.out.print("\n!!! Archivo " + nameArch + " enviado a servidor !!!\n");
+                    System.out.print("!!! Archivo " + nameArch + " enviado al servidor !!!\n");
                     dos.flush();
                 } //termina for
                 //dis = new DataInputStream(new FileInputStream(new File(""))); // Inicializa el flujo de entrada
                 //dis.close();
-            } // Termina if jFile
-        }catch(HeadlessException | IOException e){
-        }// catch
+            }catch (IOException e){
+            }// Termina catch
+        } // Termina if jFile
     } // writeCatalogo
 
 }// Cliente carrito

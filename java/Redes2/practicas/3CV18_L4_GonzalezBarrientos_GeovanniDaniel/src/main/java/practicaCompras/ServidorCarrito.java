@@ -36,11 +36,13 @@ public class ServidorCarrito {
                 list[i] = new Producto(0,"",0,0,"");
             }
             list = readCatalogo(list); // Obtiene el catalogo desde el fichero
-          
-            enviarCatalogo(cl,list); // Envia el catalogo al cliente
+            
+            enviarCatalogo(cl, list); // Envia el catalogo al cliente
             
             System.out.print("Esperando a que cliente finalice las operaciones en la tienda y envie catalogo actualizado... ");
-            recibirCatalogo(cl); // Recibe el catalogo actualizado cuando cliente se ha desconectado
+            list = recibirCatalogo(cl, list); // Recibe el catalogo actualizado cuando cliente se ha desconectado
+
+            writeCatalogo(list); // Funcion para actualizar el fichero catalogo
             
         }catch(IOException e){
         }// catch
@@ -75,12 +77,7 @@ public class ServidorCarrito {
                         line = fin.readLine();
                         list[i].description = line; // Ingresa la descripcion
                         
-                        fin.readLine(); // Elimina la linea en blanco   
-                       
-                        /*System.out.print("ID del producto: " + list[i].id + "\nNombre del Producto: " + list[i].name + "\n");
-                        System.out.print("Precio del Producto: " + list[i].price + "\nCantidad Disponible: " + list[i].stock + "\n");
-                        System.out.print("Descripcion: " + list[i].description + "\n\n");*/
-                        
+                        fin.readLine(); // Elimina la linea en blanco    
                         line = fin.readLine(); // Busca el id de otro producto
                         i++;  
                     }// while
@@ -93,13 +90,14 @@ public class ServidorCarrito {
     }// readCatalogo
     
     
-    public static void enviarCatalogo(Socket cl, Producto[] list) throws FileNotFoundException, IOException{
+    public static void enviarCatalogo(Socket cl, Producto[] list) throws FileNotFoundException, IOException{ 
          // Se inicializa flujo de salida para el objeto serializado que residira en un archivo de texto
         FileOutputStream fout = new FileOutputStream(new File("./Servidor/archCatalogoCliente.txt")); // Se indica el path del nuevo archivo
         ObjectOutputStream oos = new ObjectOutputStream(fout); 
         oos.writeObject(list); // Se almacena objeto serializado en fichero
         oos.flush();
-        
+
+
         // Se inicia procedimiento para realizar el envio de ficheros
         JFileChooser jf = new JFileChooser(); // Se inicializa el selector de archivos
         jf.setCurrentDirectory(new File("./Servidor"));
@@ -158,31 +156,24 @@ public class ServidorCarrito {
         } // Termina if jFile
     }// enviarCatalogo
     
-    public static void recibirCatalogo(Socket cl) throws ClassNotFoundException{
-        Producto[] list = new Producto[20]; // Se crea array para gestionar el catalogo internamente
-        String nameArchivos; // Variable para almacenar el nombre de los archivos entrantes
-        String directorio; // Variable para almacenar la ruta absoluta de los archivos entrantes
-        byte[] b = new byte[1024];
+    public static Producto[] recibirCatalogo(Socket cl, Producto[] list) throws ClassNotFoundException{
+       try{        
+            String nameArchivos; // Variable para almacenar el nombre de los archivos entrantes
+            String directorio; // Variable para almacenar la ruta absoluta de los archivos entrantes
+            byte[] b = new byte[1024];
         
-        for(int i=0;i<list.length;i++){ // Se inicializa el arreglo con valores predeterminados
-            list[i] = new Producto(0,"",0,0,"");
-        }
-
-        try{
             DataInputStream dis = new DataInputStream(cl.getInputStream()); // Se inicializa el flujo de entrada
              
                 DataOutputStream dos; // Se declara el que sera el flujo de salida
                 long tam = dis.readLong(); // Se lee la cantidad de archivos que enviara el cliente
-                long i = 0 , paquete = 0;
+                long i = 0, paquete = 0;
                 while(i < tam){ // Bucle para recibir cada uno de los archivos del cliente
                     directorio = dis.readUTF(); // Se recibe la ruta absoluta del archivo entrante
                     nameArchivos = dis.readUTF(); // Se recibe el nombre del archivo entrante
                     paquete = dis.readLong();
                     
-                    System.out.println("\n!!! El Cliente desea enviar: " + nameArchivos + " desde " + directorio + " !!!");
-                    
                     // Se inicializa el flujo de salida, indicando el path donde seran escritos los archivos recibidos
-                    dos = new DataOutputStream(new FileOutputStream(new File("./Servidor/" + nameArchivos)));
+                    dos = new DataOutputStream(new FileOutputStream(new File("./Servidor/" + nameArchivos))); // Se inicializa el flujo de salida
                     long recibidos = 0;
                     int n = 0;
                     int porcentaje = 0;
@@ -193,7 +184,7 @@ public class ServidorCarrito {
                         dos.flush();
                         recibidos = recibidos + n;
                         porcentaje = (int)((recibidos*10)/paquete);
-                         System.out.print("Recibido: " + porcentaje + "%\r");
+                        
                         
                     } // Termina for
                     if(paquete%1024!=0){
@@ -203,21 +194,21 @@ public class ServidorCarrito {
                         dos.flush();
                         recibidos = recibidos+n;
                         porcentaje = (int)(recibidos*100/paquete);
-                         System.out.print("Recibido: " + porcentaje + "%\r");
-                    }  
-                    System.out.print("\n!!! Archivo " + nameArchivos + " Recibido !!!\n");
+                    }
+                    System.out.print("Recibido: " + porcentaje + "%\r");
+                    System.out.print("\n!!! Archivo " + nameArchivos + " Recibido desde: " + directorio + " !!!\n");
                     i= i+1;
                     dos.flush();
                 } // termina while
-                
             // Se inicializan los flujos de entrada para deserializar el objeto catalogo recibido del cliente
             FileInputStream fin = new FileInputStream(new File("./Servidor/archCatalogoCliente.txt")); 
             ObjectInputStream ois = new ObjectInputStream(fin);
             list = (Producto[]) ois.readObject();
-
-            writeCatalogo(list); // Funcion para actualizar el fichero catalogo
-        }catch(IOException e){
-        } // Termina catch
+            
+            return list;
+        }catch(IOException e){  
+        }// catch
+       return list;
     }// recibirCatalogo
  
     
