@@ -5,6 +5,10 @@ import java.net.*;
 import javax.swing.JFileChooser;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
+import com.itextpdf.kernel.pdf.PdfDocument;
+import com.itextpdf.kernel.pdf.PdfWriter;
+import com.itextpdf.layout.Document;
+import com.itextpdf.layout.element.Paragraph;
 
 public class ClienteCarrito {
 // Funcion Principal
@@ -303,17 +307,17 @@ public class ClienteCarrito {
                                     opcion2 = 0;
                                     
                                     // Bucle para ingresar el producto al catalogo
-                                    for(int j=0; j<catalogo.length; j++){
-                                        if(catalogo[j].id == auxProd.id){ // ya existe el producto en catalogo
-                                                catalogo[j].stock = catalogo[j].stock + auxProd.stock;
-                                                opcion2 = 1;
-                                        } 
-
-                                        if(( catalogo[j].id == 0) && (opcion2 < 1) ){
-                                            opcion = catalogo[j].id;
+                                    for (Producto catalogo1 : catalogo) {
+                                        if (catalogo1.id == auxProd.id) {
+                                            // ya existe el producto en catalogo
+                                            catalogo1.stock = catalogo1.stock + auxProd.stock;
+                                            opcion2 = 1;
+                                        }
+                                        if ((catalogo1.id == 0) && (opcion2 < 1)) {
+                                            opcion = catalogo1.id;
                                             opcion2 = 2;
                                         }
-                                    }//for
+                                    } //for
 
                                      // Producto es nuevo en catalogo
                                     if(opcion2 == 2 ){
@@ -335,70 +339,40 @@ public class ClienteCarrito {
                         // DIRECTAMENTE PONER IMPRESION DE PDF 
                          System.out.print("!!! Procesando su compra !!! Por favor espere... \n");  
                           System.out.print("Generando ticket de compra... \n");  
-                            try{
-                            try ( BufferedWriter fout = new BufferedWriter(new FileWriter(new File("./Cliente/ticketCompra.txt"))) ){ // Se realiza la lectura desde el fichero
-                                if (! (new File("./Cliente/ticketCompra.txt")).exists()){ // Verifica existencia de fichero catalogo
-                                    System.out.println("!!! No se ha podido acceder a \"ticketCompra.txt\" ");
-                                    System.exit(0);
+                            try{ 
+                                String auxiliar;
+                                DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MMMM/yyyy HH:mm:ss");
+                                final PdfWriter pdfWriter = new PdfWriter("./Cliente/ticket.pdf");
+                                final PdfDocument pdfDocument = new PdfDocument(pdfWriter);
 
-                                }else{ // Se ha accedido correctamente al catalogo
-                                    fout.write("################### TICKET DE COMPRA ###################"); // Escribe el ID en fichero
-                                    fout.newLine();
-                                    fout.newLine();
-                                    
-                                    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yy/MMMM/dd HH:mm:ss");
-                                    fout.newLine();
-                                    fout.newLine();
-                                    
-                                    fout.write("Fecha de Compra: " + dtf.format(LocalDateTime.now())); // Escribe el ID en fichero
-                                    fout.newLine();
-                                    fout.newLine();
-                                    
+                                try (Document document = new Document(pdfDocument)) {
+                                    document.add(new Paragraph("####################### TICKET DE COMPRA #######################"));
+                                    document.add(new Paragraph("Fecha de Compra: " + dtf.format(LocalDateTime.now())));
+
                                     for(i=0; i<carrito.length; i++){ // Bucle para llenar los datos hasta llegar al final de fichero
                                         if(carrito[i].id >= 100){
-
-                                            subtotal = carrito[i].stock * carrito[i].price;
-                                            total =+ subtotal;
-                                            
-                                            fout.write("ID: " + String.valueOf(carrito[i].id)); // Escribe el ID en fichero
-                                            fout.newLine();
-
-                                            fout.write("Producto: " + carrito[i].name); // Escribe el nombre de producto en fichero
-                                            fout.newLine();
-
-                                            fout.write("Precio Unitario: $" + String.valueOf(carrito[i].price)); // Escribe el precio de producto en fichero
-                                            fout.newLine();
-
-                                            fout.write("Cantidad: " +String.valueOf(carrito[i].stock)); // Escribe cantidad del producto en fichero
-                                            fout.newLine();
-
-                                            fout.write("Descripcion: " +carrito[i].description); // Escribe descripcion de producto en fichero
-                                            fout.newLine();
+                                            auxiliar = "ID: " + String.valueOf(carrito[i].id) + "\nProducto: " + carrito[i].name;
+                                            auxiliar = auxiliar + "\nPrecio Unitario: $" + String.valueOf(carrito[i].price);
+                                            auxiliar = auxiliar + "\nCantidad: " + String.valueOf(carrito[i].stock) + "\nDescripcion: " + carrito[i].description;
                                             
                                             subtotal = carrito[i].stock * carrito[i].price;
-                                            total =+ subtotal;
+                                            total = total + subtotal;
                                             
-                                            fout.write("Subtotal: $" + String.valueOf(subtotal)); // Escribe descripcion de producto en fichero
-                                            fout.newLine();
-                                            fout.newLine();
-                                            
+                                            auxiliar = auxiliar + "\nSubtotal: $" + String.valueOf(subtotal) + "\n\n";
+                                         
+                                            document.add(new Paragraph(auxiliar));
+
                                             // Elimina los datos del producto en carrito
                                             carrito[i] = new Producto(0,"",0,0,"");
                                         }// if
                                     }// for
-                                    
-                                    fout.write("Total de la compra: $" + String.valueOf(total)); // Escribe descripcion de producto en fichero
-                                    fout.newLine();
-                                    fout.newLine();
-                                    
-                                    fout.write("############## !!! Gracias por su compra !!! ################"); // Escribe el ID en fichero
-                                    fout.newLine();
-                                    fout.newLine();
-                                }// else
-                            }           
-                        }catch(IOException | NumberFormatException e){
+                                    document.add(new Paragraph("Total de la compra: $" + String.valueOf(total)));
+                                    document.add(new Paragraph("################# !!! Gracias por su compra !!! ################"));
+                                    document.add(new Paragraph("\n*Gonzalez Barrientos Geovanni Daniel\n*Practica 1 \"Carrito de Compras\" \n*3CV18"));
+                                }
+                            
+                        }catch(NumberFormatException e){
                         }// catch
-                        
                         System.out.print("!!! Compra realizada con exito !!!\n\n");  
                         System.out.print("!!! Gracias por realizar su compra !!!\n");  
                         System.out.print("Presione Enter para continuar... ");  
@@ -425,17 +399,17 @@ public class ClienteCarrito {
                                 opcion2 = 0;
 
                                 // Bucle para ingresar el producto al catalogo
-                                for(int j=0; j<catalogo.length; j++){
-                                    if(catalogo[j].id == auxProd.id){ // ya existe el producto en catalogo
-                                            catalogo[j].stock = catalogo[j].stock + auxProd.stock;
-                                            opcion2 = 1;
-                                    } 
-
-                                    if(( catalogo[j].id == 0) && (opcion2 < 1) ){
-                                        opcion = catalogo[j].id;
+                                for (Producto catalogo1 : catalogo) {
+                                    if (catalogo1.id == auxProd.id) {
+                                        // ya existe el producto en catalogo
+                                        catalogo1.stock = catalogo1.stock + auxProd.stock;
+                                        opcion2 = 1;
+                                    }
+                                    if ((catalogo1.id == 0) && (opcion2 < 1)) {
+                                        opcion = catalogo1.id;
                                         opcion2 = 2;
                                     }
-                                }//for
+                                } //for
 
                                 // Producto es nuevo en catalogo
                                 if(opcion2 == 2 ){
