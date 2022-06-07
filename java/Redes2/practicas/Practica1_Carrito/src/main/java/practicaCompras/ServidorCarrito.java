@@ -37,7 +37,7 @@ public class ServidorCarrito {
             }
             list = readCatalogo(list); // Obtiene el catalogo desde el fichero
             
-            enviarCatalogo(cl, list); // Envia el catalogo al cliente
+            enviarCatalogo(cl, list, "./Servidor/archCatalogoCliente.txt"); // Envia el catalogo al cliente
             
             System.out.print("Esperando a que cliente finalice las operaciones en la tienda y envie catalogo actualizado... ");
             list = recibirCatalogo(cl, list); // Recibe el catalogo actualizado cuando cliente se ha desconectado
@@ -90,70 +90,61 @@ public class ServidorCarrito {
     }// readCatalogo
     
     
-    public static void enviarCatalogo(Socket cl, Producto[] list) throws FileNotFoundException, IOException{ 
+    public static void enviarCatalogo(Socket cl, Producto[] list, String arch) throws FileNotFoundException, IOException{ 
          // Se inicializa flujo de salida para el objeto serializado que residira en un archivo de texto
         FileOutputStream fout = new FileOutputStream(new File("./Servidor/archCatalogoCliente.txt")); // Se indica el path del nuevo archivo
         ObjectOutputStream oos = new ObjectOutputStream(fout); 
         oos.writeObject(list); // Se almacena objeto serializado en fichero
         oos.flush();
 
-
         // Se inicia procedimiento para realizar el envio de ficheros
-        JFileChooser jf = new JFileChooser(); // Se inicializa el selector de archivos
-        jf.setCurrentDirectory(new File("./Servidor"));
-        jf.setMultiSelectionEnabled(true); // Permite seleccion multiple de archivos
-        jf.setFileSelectionMode(JFileChooser.FILES_ONLY); // Solo aceptara archivos
-        System.out.printf("\nA continuacion debera seleccionar los archivos a enviar al cliente... ");
-        int r = jf.showOpenDialog(null); // Muestra la ventana del selector
+        File f = new File(arch); // Array para almacenar los archivos seleccionados
+        long tam = 1; // Total de los Archivos a enviar
+        int i = 0;
+        try{
+            DataOutputStream dos = new DataOutputStream(cl.getOutputStream()); // Se inicializa el flujo de salida
+            DataInputStream dis = null; // Se declara el que sera el flujo de entrada    
+            System.out.printf("\nEspere mientras enviamos los archivos al cliente...  \n");
+            dos.writeLong(tam); // Envia numero de archivos seleccionados
+            dos.flush();
 
-        if(r == JFileChooser.APPROVE_OPTION){ // Procedimiento cuando se haya confirmado los archivos a enviar
-            File[] f = jf.getSelectedFiles(); // Array para almacenar los archivos seleccionados
-            long tam = f.length; // Total de los Archivos a enviar
-            int i = 0;
-            try{
-                DataOutputStream dos = new DataOutputStream(cl.getOutputStream()); // Se inicializa el flujo de salida
-                DataInputStream dis = null; // Se declara el que sera el flujo de entrada    
-                System.out.printf("\nEspere mientras enviamos los archivos...  \n");
-                dos.writeLong(tam); // Envia numero de archivos seleccionados
+            for(i = 0; i < tam ; i++){ // Bucle para enviar cada uno de los archivos seleccionados
+                String pathArch = f.getAbsolutePath(); // Almacena la ruta absoluta del archivo a enviar
+                String nameArch = f.getName() ; // Almacena el nombre del archivo a enviar
+                long paquete = f.length();
+
+                dis = new DataInputStream(new FileInputStream(new File(pathArch))); // Inicializa el flujo de entrada
+
+                dos.writeUTF(pathArch); // Envia la ruta absoluta del archivo seleccionado al servidor
                 dos.flush();
 
-                for(i = 0; i < tam ; i++){ // Bucle para enviar cada uno de los archivos seleccionados
-                    String pathArch = f[i].getAbsolutePath(); // Almacena la ruta absoluta del archivo a enviar
-                    String nameArch = f[i].getName() ; // Almacena el nombre del archivo a enviar
-                    long paquete = f[i].length();
-                    
-                    dis = new DataInputStream(new FileInputStream(new File(pathArch))); // Inicializa el flujo de entrada
-          
-                    dos.writeUTF(pathArch); // Envia la ruta absoluta del archivo seleccionado al servidor
+                dos.writeUTF(nameArch); // Envia el nombre del archivo seleccionado al servidor
+                dos.flush();
+
+                dos.writeLong(paquete); // Envia el nombre del archivo seleccionado al servidor
+                dos.flush();
+                byte[] b = new byte[1024]; // 100 KB
+                long enviados = 0;
+                int porcentaje = 0;
+                int n = 0;
+
+                while(enviados<paquete){ // Bucle para enviar bytes
+                    n = dis.read(b);
+                    dos.write(b,0,n);
                     dos.flush();
 
-                    dos.writeUTF(nameArch); // Envia el nombre del archivo seleccionado al servidor
-                    dos.flush();
-
-                    dos.writeLong(paquete); // Envia el nombre del archivo seleccionado al servidor
-                    dos.flush();
-                    byte[] b = new byte[1024]; // 100 KB
-                    long enviados = 0;
-                    int porcentaje = 0;
-                    int n = 0;
-
-                    while(enviados<paquete){ // Bucle para enviar bytes
-                        n = dis.read(b);
-                        dos.write(b,0,n);
-                        dos.flush();
-
-                        enviados = enviados + n;
-                        porcentaje = (int)((enviados*100)/paquete);
-                        System.out.print("\nEnviado: " + porcentaje + "%\r");
-                    } // Termina while
-                    System.out.print("!!! Archivo " + nameArch + " enviado al cliente !!!\n");
-                    dos.flush();
-                } //termina for
-                //dis = new DataInputStream(new FileInputStream(new File(""))); // Inicializa el flujo de entrada
+                    enviados = enviados + n;
+                    porcentaje = (int)((enviados*100)/paquete);
+                    System.out.print("\nEnviado: " + porcentaje + "%\r");
+                } // Termina while
+                System.out.print("!!! Archivo " + nameArch + " enviado al cliente !!!\n");
+                dos.flush();
                 //dis.close();
-            }catch (IOException e){
-            }// Termina catch
-        } // Termina if jFile
+            } //termina for
+            //dis = new DataInputStream(new FileInputStream(new File(""))); // Inicializa el flujo de entrada
+            //dos.close();
+        }catch (IOException e){
+        }// Termina catch
     }// enviarCatalogo
     
     public static Producto[] recibirCatalogo(Socket cl, Producto[] list) throws ClassNotFoundException{
