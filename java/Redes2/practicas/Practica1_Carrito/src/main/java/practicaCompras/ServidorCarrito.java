@@ -1,7 +1,6 @@
 package practicaCompras;
 import java.io.*;
 import java.net.*;
-import javax.swing.JFileChooser;
 
 public class ServidorCarrito {
     
@@ -10,7 +9,7 @@ public class ServidorCarrito {
         try{
             ServerSocket s = new ServerSocket(3080); // Inicia el servidor
             Socket cl = null;
-            System.out.println("                          ##### Practica 1 - Carrito de Compras #####\n");
+            System.out.println("\t\t\t##### Practica 1 - Carrito de Compras - SERVIDOR #####\n");
             System.out.println("----- Gonzalez Barrientos Geovanni Daniel 3CV18 Aplicaciones para Comunicaciones en Red -----\n\n");
 
             System.out.println("**** SERVIDOR INICIADO (Puerto: " + s.getLocalPort() + " ) ****\n");
@@ -21,8 +20,8 @@ public class ServidorCarrito {
                 System.out.println("*** CONEXION ESTABLECIDA CON CLIENTE DESDE " + cl.getInetAddress() + " : " + cl.getPort() + " ***\n");
                 atenderCliente(cl);
                 cl.close(); // Funcion para finalizar conexion con cliente
-                System.out.print("\n*** CONEXION CON CLIENTE FINALIZADA ***\n");
-                System.out.println("Esperando conexion con otro cliente... \n");
+                System.out.print("\n*** CONEXION CON CLIENTE FINALIZADA ***\n\n");
+                System.out.print("Esperando conexion con otro cliente... \n");
             }// while
         }catch (IOException e){
         }// catch
@@ -37,13 +36,20 @@ public class ServidorCarrito {
             }
             list = readCatalogo(list); // Obtiene el catalogo desde el fichero
             
-            enviarCatalogo(cl, list, "./Servidor/archCatalogoCliente.txt"); // Envia el catalogo al cliente
+            System.out.printf("\nEspere mientras enviamos los archivos necesarios al cliente...  \n");
+            enviarCatalogo(cl, list, "./Servidor/DBClient.txt"); // Envia el catalogo al cliente
             
-            System.out.print("Esperando a que cliente finalice las operaciones en la tienda y envie catalogo actualizado... ");
+            // Envia las imagenes de los productos en catalogo al cliente
+            enviarCatalogo(cl, list, "./Servidor/boligrafo.jpg"); 
+            enviarCatalogo(cl, list, "./Servidor/borrador.jpg"); 
+            enviarCatalogo(cl, list, "./Servidor/cuaderno.jpg"); 
+            enviarCatalogo(cl, list, "./Servidor/lapicera.jpg"); 
+            enviarCatalogo(cl, list, "./Servidor/mochila.jpg"); 
+            
+            System.out.print("\nEsperando a que cliente finalice las operaciones en la tienda y devuelva el catalogo actualizado... ");
             list = recibirCatalogo(cl, list); // Recibe el catalogo actualizado cuando cliente se ha desconectado
 
-            writeCatalogo(list); // Funcion para actualizar el fichero catalogo
-            
+            writeCatalogo(list); // Funcion para actualizar el fichero catalogo   
         }catch(IOException e){
         }// catch
     }// atenderCliente
@@ -52,10 +58,10 @@ public class ServidorCarrito {
     // Funcion para leer el catalogo de productos desde el fichero base
     public static Producto[] readCatalogo(Producto[] list){
         try{
-            try (BufferedReader fin = new BufferedReader(new FileReader(new File("./Servidor/archCatalogo.txt"))) // Se realiza la lectura desde el fichero
+            try (BufferedReader fin = new BufferedReader(new FileReader(new File("./Servidor/Database.txt"))) // Se realiza la lectura desde el fichero
             ) {
-                if (! (new File("./Servidor/archCatalogo.txt")).exists()){ // Verifica existencia de fichero catalogo
-                    System.out.println("!!! No se ha podido acceder a \"archCatalogo.txt\" ");
+                if (! (new File("./Servidor/Database.txt")).exists()){ // Verifica existencia de fichero catalogo
+                    System.out.println("!!! No se ha podido acceder a \"Database.txt\" ");
                     
                 }else{
                     String line = null;
@@ -92,7 +98,7 @@ public class ServidorCarrito {
     
     public static void enviarCatalogo(Socket cl, Producto[] list, String arch) throws FileNotFoundException, IOException{ 
          // Se inicializa flujo de salida para el objeto serializado que residira en un archivo de texto
-        FileOutputStream fout = new FileOutputStream(new File("./Servidor/archCatalogoCliente.txt")); // Se indica el path del nuevo archivo
+        FileOutputStream fout = new FileOutputStream(new File("./Servidor/DBClient.txt")); // Se indica el path del nuevo archivo
         ObjectOutputStream oos = new ObjectOutputStream(fout); 
         oos.writeObject(list); // Se almacena objeto serializado en fichero
         oos.flush();
@@ -104,12 +110,11 @@ public class ServidorCarrito {
         try{
             DataOutputStream dos = new DataOutputStream(cl.getOutputStream()); // Se inicializa el flujo de salida
             DataInputStream dis = null; // Se declara el que sera el flujo de entrada    
-            System.out.printf("\nEspere mientras enviamos los archivos al cliente...  \n");
             dos.writeLong(tam); // Envia numero de archivos seleccionados
             dos.flush();
 
             for(i = 0; i < tam ; i++){ // Bucle para enviar cada uno de los archivos seleccionados
-                String pathArch = f.getAbsolutePath(); // Almacena la ruta absoluta del archivo a enviar
+                String pathArch = f.getCanonicalPath(); // Almacena la ruta absoluta del archivo a enviar
                 String nameArch = f.getName() ; // Almacena el nombre del archivo a enviar
                 long paquete = f.length();
 
@@ -135,9 +140,9 @@ public class ServidorCarrito {
 
                     enviados = enviados + n;
                     porcentaje = (int)((enviados*100)/paquete);
-                    System.out.print("\nEnviado: " + porcentaje + "%\r");
+                    //System.out.print("\nEnviado: " + porcentaje + "%\r");
                 } // Termina while
-                System.out.print("!!! Archivo " + nameArch + " enviado al cliente !!!\n");
+                System.out.print("!!! Archivo \"" + nameArch + "\" enviado al cliente !!!\n");
                 dos.flush();
                 //dis.close();
             } //termina for
@@ -186,13 +191,13 @@ public class ServidorCarrito {
                         recibidos = recibidos+n;
                         porcentaje = (int)(recibidos*100/paquete);
                     }
-                    System.out.print("Recibido: " + porcentaje + "%\r");
-                    System.out.print("\n!!! Archivo " + nameArchivos + " Recibido desde: " + directorio + " !!!\n");
+                    //System.out.print("Recibido: " + porcentaje + "%\r");
+                    System.out.print("\n!!! Archivo \"" + nameArchivos + "\" Recibido desde: " + directorio + " !!!\n");
                     i= i+1;
                     dos.flush();
                 } // termina while
             // Se inicializan los flujos de entrada para deserializar el objeto catalogo recibido del cliente
-            FileInputStream fin = new FileInputStream(new File("./Servidor/archCatalogoCliente.txt")); 
+            FileInputStream fin = new FileInputStream(new File("./Servidor/DBClient.txt")); 
             ObjectInputStream ois = new ObjectInputStream(fin);
             list = (Producto[]) ois.readObject();
             
@@ -207,9 +212,9 @@ public class ServidorCarrito {
     public static void writeCatalogo(Producto[] list){
         try{
             int i = 0; // Auxiliar para recorrido del array
-            try ( BufferedWriter fout = new BufferedWriter(new FileWriter(new File("./Servidor/archCatalogo.txt"))) ){ // Se realiza la lectura desde el fichero
-                if (! (new File("./Servidor/archCatalogo.txt")).exists()){ // Verifica existencia de fichero catalogo
-                    System.out.println("!!! No se ha podido acceder a \"archCatalogo.txt\" ");
+            try ( BufferedWriter fout = new BufferedWriter(new FileWriter(new File("./Servidor/Database.txt"))) ){ // Se realiza la lectura desde el fichero
+                if (! (new File("./Servidor/Database.txt")).exists()){ // Verifica existencia de fichero catalogo
+                    System.out.println("!!! No se ha podido acceder a \"Database.txt\" ");
                     System.exit(0);
                     
                 }else{ // Se ha accedido correctamente al catalogo

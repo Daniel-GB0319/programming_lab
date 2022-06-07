@@ -1,8 +1,6 @@
 package practicaCompras;
-import java.awt.*;
 import java.io.*;
 import java.net.*;
-import javax.swing.JFileChooser;
 import java.time.*;
 import java.time.format.DateTimeFormatter;
 import com.itextpdf.kernel.pdf.PdfDocument;
@@ -16,7 +14,7 @@ public class ClienteCarrito {
         try{
             Socket cl = null;
             BufferedReader br = new BufferedReader(new InputStreamReader(System.in)); // Se inicializa buffer para leer datos desde teclado
-            System.out.println("                       ##### Practica 1 - Carrito de Compras #####\n");
+            System.out.println("\t\t\t##### Practica 1 - Carrito de Compras - CLIENTE #####\n");
             System.out.println("----- Gonzalez Barrientos Geovanni Daniel 3CV18 Aplicaciones para Comunicaciones en Red -----\n\n");
 
             System.out.println("**** CLIENTE INICIADO ****\n");
@@ -26,7 +24,7 @@ public class ClienteCarrito {
             int pto = Integer.parseInt(br.readLine()); // Se lee el puerto del servidor
          
             cl = new Socket(host,pto); // Crea conexion con servidor segun direccion y puerto
-            System.out.printf("\n!!! CONEXION CON SERVIDOR ESTABLECIDO !!! \nEsperando catalogo desde el servidor... ");
+            System.out.printf("\n!!! CONEXION CON SERVIDOR ESTABLECIDO !!! \n\nEsperando catalogo desde el servidor... ");
             
             menuCliente(cl);
             System.out.printf("\n!!! CONEXION CON SERVIDOR FINALIZADO !!!");
@@ -52,7 +50,10 @@ public class ClienteCarrito {
                 carrito[i] = new Producto(0,"",0,0,"");
             }
             // se descarga el catalogo y se asigna al arreglo
-            catalogo = downloadCatalogo(cl, catalogo); 
+            for(i = 0; i < 6; i++){
+                catalogo = downloadCatalogo(cl, catalogo);
+            }
+             
             
             do{// Menu principal del cliente
                 
@@ -339,7 +340,7 @@ public class ClienteCarrito {
                     case 7: // Comprar productos del carrito
                         // DIRECTAMENTE PONER IMPRESION DE PDF 
                          System.out.print("!!! Procesando su compra !!! Por favor espere... \n");  
-                          System.out.print("Generando ticket de compra... \n");  
+                          System.out.print("Generando ticket de compra \"ticket.pdf\"... \n\n");  
                             try{ 
                                 String auxiliar;
                                 DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MMMM/yyyy HH:mm:ss");
@@ -370,12 +371,12 @@ public class ClienteCarrito {
                                     document.add(new Paragraph("Total de la compra: $" + String.valueOf(total)));
                                     document.add(new Paragraph("################# !!! Gracias por su compra !!! ################"));
                                     document.add(new Paragraph("\n*Gonzalez Barrientos Geovanni Daniel\n*Practica 1 \"Carrito de Compras\" \n*3CV18"));
+                                    document.close();
                                 }
                             
                         }catch(NumberFormatException e){
                         }// catch
-                        System.out.print("!!! Compra realizada con exito !!!\n\n");  
-                        System.out.print("!!! Gracias por realizar su compra !!!\n");  
+                        System.out.print("!!! Compra realizada con exito !!! Gracias por realizar su compra.\n");  
                         System.out.print("Presione Enter para continuar... ");  
                         br.readLine();
                         break;
@@ -446,8 +447,8 @@ public class ClienteCarrito {
             System.out.print("\n--------- Catalogo de Productos ---------\n");
             for (Producto catalogo1 : catalogo) {
                 if (catalogo1.id >= 100) {
-                    System.out.print("ID: " + catalogo1.id + "  | Producto: " + catalogo1.name + "\n");
-                    System.out.print("Precio: $" + catalogo1.price + " | Disponible: " + catalogo1.stock + " unidades\n");
+                    System.out.print("ID: " + catalogo1.id + "  || Producto: " + catalogo1.name + "\n");
+                    System.out.print("Precio: $" + catalogo1.price + " || Disponible: " + catalogo1.stock + " unidades\n");
                     System.out.print("Descripcion: " + catalogo1.description + "\n\n");
                 } // if
             } // for
@@ -457,8 +458,8 @@ public class ClienteCarrito {
             System.out.print("\n---------------- Carrito ----------------\n");
             for (Producto carrito1 : carrito) {
                 if (carrito1.id >= 100) {
-                    System.out.print("ID: " + carrito1.id + "  | Producto: " + carrito1.name + "\n");
-                    System.out.print("Precio: $" + carrito1.price + " | Cantidad: " + carrito1.stock + " unidades\n");
+                    System.out.print("ID: " + carrito1.id + "  || Producto: " + carrito1.name + "\n");
+                    System.out.print("Precio: $" + carrito1.price + " || Cantidad: " + carrito1.stock + " unidades\n");
                     System.out.print("Descripcion: " + carrito1.description + "\n\n");
                 } // if
             } // for
@@ -509,15 +510,15 @@ public class ClienteCarrito {
                     porcentaje = (int)(recibidos*100/paquete);
                 }
                 
-                System.out.print("Recibido: " + porcentaje + "%\r");
-                System.out.print("\n!!! Archivo " + nameArchivos + " Recibido desde: " + directorio + " !!!\n");
+                //System.out.print("Recibido: " + porcentaje + "%\r");
+                System.out.print("\n!!! Archivo \"" + nameArchivos + "\" Recibido desde: " + directorio + " !!!");
                 i= i+1;
                 dos.flush();
                 //dos.close();
             } // termina while
             
             // Se deserializa el objeto para trabajar el catalogo en cliente
-            FileInputStream fin = new FileInputStream(new File("./Cliente/archCatalogoCliente.txt")); 
+            FileInputStream fin = new FileInputStream(new File("./Cliente/DBClient.txt")); 
             ObjectInputStream in = new ObjectInputStream(fin);
             catalogo = (Producto[]) in.readObject();
                      
@@ -532,13 +533,13 @@ public class ClienteCarrito {
     // Funcion para escribir el catalogo de productos en el fichero
     public static void uploadCatalogo(Socket cl, Producto[] catalogo) throws IOException{
         // Se serializa el catalogo actualizado para ser guardado en un fichero
-        FileOutputStream fout = new FileOutputStream(new File("./Cliente/archCatalogoCliente.txt")); 
+        FileOutputStream fout = new FileOutputStream(new File("./Cliente/DBClient.txt")); 
         ObjectOutputStream oos = new ObjectOutputStream(fout); 
         oos.writeObject(catalogo); // Se almacena objeto serializado en fichero 
         oos.flush();
 
         // Se inicia procedimiento para realizar el envio de ficheros
-        File f = new File("./Cliente/archCatalogoCliente.txt"); // Se selecciona el archivo para enviar a servidor
+        File f = new File("./Cliente/DBClient.txt"); // Se selecciona el archivo para enviar a servidor
         long tam = 1; // Indica que solo se enviara un archivo
         int i = 0;
         try{
@@ -549,7 +550,7 @@ public class ClienteCarrito {
             dos.flush();
 
             for(i = 0; i < tam ; i++){ // Bucle para enviar archivos seleccionados
-                String pathArch = f.getAbsolutePath(); // Almacena la ruta absoluta del archivo a enviar
+                String pathArch = f.getCanonicalPath(); // Almacena la ruta absoluta del archivo a enviar
                 String nameArch = f.getName() ; // Almacena el nombre del archivo a enviar
                 long paquete = f.length();
 
@@ -575,9 +576,9 @@ public class ClienteCarrito {
 
                     enviados = enviados + n;
                     porcentaje = (int)((enviados*100)/paquete);
-                    System.out.print("\nEnviado: " + porcentaje + "%\r");
+                    //System.out.print("\nEnviado: " + porcentaje + "%\r");
                 } // Termina while
-                System.out.print("!!! Archivo " + nameArch + " enviado al servidor !!!\n");
+                System.out.print("!!! Archivo \"" + nameArch + "\" enviado al servidor !!!\n");
                 dos.flush();
             } //termina for
             //dis = new DataInputStream(new FileInputStream(new File(""))); // Inicializa el flujo de entrada
