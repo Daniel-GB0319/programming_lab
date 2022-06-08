@@ -1,18 +1,18 @@
 package practicaCompras;
-import java.io.*;
-import java.net.*;
-import java.time.*;
-import java.time.format.DateTimeFormatter;
-import com.itextpdf.kernel.pdf.PdfDocument;
-import com.itextpdf.kernel.pdf.PdfWriter;
-import com.itextpdf.layout.Document;
-import com.itextpdf.layout.element.Paragraph;
+import java.io.*; // Flujo de entrada y salida
+import java.net.*; // Inicializacion de Sockets
+import java.time.*; // Herramientas para trabajar con fechas y horas
+import java.time.format.DateTimeFormatter; // Sirve para trabajar con diferentes formatos y zonas horarias
+import com.itextpdf.kernel.pdf.PdfDocument;   // Librerias para el manejo de 
+import com.itextpdf.kernel.pdf.PdfWriter;     // archivos pdf, ademas de permitir la
+import com.itextpdf.layout.Document;          // modificacion y escritura de estos
+import com.itextpdf.layout.element.Paragraph; // documetos.
 
 public class ClienteCarrito {
 // Funcion Principal
     public static void main(String [] arc) throws IOException, ClassNotFoundException{        
         try{
-            Socket cl = null;
+            Socket cl = null; // Se declara el socket para el cliente
             BufferedReader br = new BufferedReader(new InputStreamReader(System.in)); // Se inicializa buffer para leer datos desde teclado
             System.out.println("\t\t\t##### Practica 1 - Carrito de Compras - CLIENTE #####\n");
             System.out.println("----- Gonzalez Barrientos Geovanni Daniel 3CV18 Aplicaciones para Comunicaciones en Red -----\n\n");
@@ -23,10 +23,10 @@ public class ClienteCarrito {
             System.out.printf("\nEscriba el puerto: ");
             int pto = Integer.parseInt(br.readLine()); // Se lee el puerto del servidor
          
-            cl = new Socket(host,pto); // Crea conexion con servidor segun direccion y puerto
+            cl = new Socket(host,pto); // Crea conexion con servidor segun direccion y puerto ingresados
             System.out.printf("\n!!! CONEXION CON SERVIDOR ESTABLECIDO !!! \n\nEsperando catalogo desde el servidor... ");
             
-            menuCliente(cl);
+            menuCliente(cl); // Funcion para realizar operaciones en carrito
             System.out.printf("\n!!! CONEXION CON SERVIDOR FINALIZADO !!!");
           
         }catch (IOException | NumberFormatException e){
@@ -34,11 +34,11 @@ public class ClienteCarrito {
     }// main
     
     
-    // Funcion para enviar archivos
+    // Funcion para realizar operaciones en catalogo
     public static void menuCliente(Socket cl) throws ClassNotFoundException{
         try{
             BufferedReader br = new BufferedReader(new InputStreamReader(System.in)); // Buffer para realizar lecturas desde teclado
-            int menu, opcion, opcion2, opcion3, i;
+            int menu = -1, auxUser = 0, idUser = 0, cantUser = 0, flag = 0, i = 0, j = 0;
             float subtotal = 0,total = 0; // Variables para realizar calculos al momento de comprar    
             Producto[] catalogo = new Producto[20]; // Se crea array para almacenar el catalogo
             Producto[] carrito = new Producto[20]; // Se crea array para almacenar el carrito
@@ -54,25 +54,22 @@ public class ClienteCarrito {
                 catalogo = downloadCatalogo(cl, catalogo);
             }
              
-            
-            do{// Menu principal del cliente
-                
+            do{// Menu principal del cliente   
                 System.out.print("\n\n\n\n\n\n\n\n\n\n********** MENU PRINCIPAL **********\n");
                 System.out.print("1) Ver Catalogo de productos \n2) Ver Carrito \n3) Agregar producto a Carrito \n4) Modificar productos del carrito \n");
                 System.out.print("5) Eliminar producto de carrito \n6) Vaciar Carrito \n7) Comprar productos del carrito \n0) Salir del programa \n\n");
-                
                 System.out.print("Ingrese el numero correspondiente al inciso y pulse Enter: ");
                 menu = Integer.parseInt(br.readLine());
                 
                 switch(menu){
                     case 1: // Ver Catalogo de Productos
-                        verCatalogo(catalogo,carrito,1);
+                        verCatalogo(catalogo,carrito,1); // Muestra el catalogo/carrito
                         System.out.print("Presione Enter para Continuar... ");  
                         br.readLine();
                         break;
                         
                     case 2: // Ver Carrito
-                        verCatalogo(catalogo,carrito,2);
+                        verCatalogo(catalogo,carrito,2); // Muestra el catalogo/carrito
                         System.out.print("Presione Enter para Continuar... ");  
                         br.readLine();
                         break;
@@ -81,46 +78,50 @@ public class ClienteCarrito {
                         verCatalogo(catalogo,carrito,1);
                         System.out.print("Ingrese el ID del producto que desea agregar a su carrito: ");
                         do{
-                            opcion = Integer.parseInt(br.readLine());
-                        }while((opcion < 100) || (opcion > 119) );
-                        
+                            idUser = Integer.parseInt(br.readLine());
+                        }while((idUser < 100) || (idUser > 119) );
                         
                         // Bucle para obtener los datos del producto seleccionado en catalogo
-                        for(i=0; i<catalogo.length; i++){
-                            if(catalogo[i].id == opcion){ // busca el producto por id
-                                if(catalogo[i].stock != 0){
-                                    auxProd.id = catalogo[i].id;
-                                    auxProd.name = catalogo[i].name;
-                                    auxProd.price = catalogo[i].price;
-                                    auxProd.stock = catalogo[i].stock;
-                                    auxProd.description = catalogo[i].description;
-                                    
-                                    catalogo[i].stock--; // Resta una unidad del stock para agregarlo al carrito
-                                    
-                                    if(catalogo[i].stock == 0){ // Verifica si ya no hay existencias del producto en catalogo
-                                        catalogo[i] = new Producto(0,"",0,0,"");
-                                    }
-                                    break;
-                                }//if
+                        for(i = 0; i < catalogo.length; i++){
+                            if(catalogo[i].id == idUser){ // busca el producto por id
+                                auxProd.id = catalogo[i].id;
+                                auxProd.name = catalogo[i].name;
+                                auxProd.price = catalogo[i].price;
+                                auxProd.stock = catalogo[i].stock;
+                                auxProd.description = catalogo[i].description;
+
+                                catalogo[i].stock--; // Resta una unidad del stock para agregarlo al carrito
+
+                                if(catalogo[i].stock == 0){ // Verifica si ya no hay existencias del producto en catalogo
+                                    catalogo[i] = new Producto(0,"",0,0,"");
+                                } // if
+                                break; 
                             }//if
                         }//for
                         
+                        flag = 0;
                         // Bucle para ingresar el producto al carrito
-                        for(i=0; i<carrito.length; i++){
+                        for(i = 0; i < carrito.length; i++){
                             if(carrito[i].id == auxProd.id){ // ya existe el producto en carrito
                                     carrito[i].stock++;
+                                    flag = 1; // Se ha encontrado el producto existente en carrito
                                     break;
-                            }else{ // Producto es nuevo en carrito
-                                if(carrito[i].id < 100){
-                                    carrito[i].id = auxProd.id;
-                                    carrito[i].name = auxProd.name;
-                                    carrito[i].price = auxProd.price;
-                                    carrito[i].stock = 1;
-                                    carrito[i].description = auxProd.description;
-                                    break;
-                                }
+                            }else{ // Se encuentra el primer espacio vacio en carrito
+                                if(carrito[i].id == 0 && flag < 1){
+                                    auxUser = i; // Almacena posicion de espacio vacio
+                                    flag = 2; // Ya se ubico el primer espacio vacio en carrito. Util en caso de no existir producto 
+                                } // if
                             }//else
                         }//for
+                        
+                        if(flag == 2){ // Producto seleccionado no existe en carrito
+                            carrito[auxUser].id = auxProd.id;
+                            carrito[auxUser].name = auxProd.name;
+                            carrito[auxUser].price = auxProd.price;
+                            carrito[auxUser].stock = 1;
+                            carrito[auxUser].description = auxProd.description;
+                        } // if
+                        
                         System.out.print("!!! Producto ha sido agregado al carrito !!!\n");  
                         System.out.print("Presione Enter para Continuar... ");  
                         br.readLine();
@@ -129,41 +130,41 @@ public class ClienteCarrito {
                     case 4: // Modificar Productos
                         verCatalogo(catalogo,carrito,2);
                         System.out.print("Que operacion desea realizar? ( 1) Aumentar cantidad / 2) Restar cantidad ): ");
-                        opcion = Integer.parseInt(br.readLine());
+                        auxUser = Integer.parseInt(br.readLine());
                         
-                        switch(opcion){
+                        switch(auxUser){
                             case 1: // Aumentar cantidad
                                 System.out.print("Ingrese el ID del producto que desea modificar su carrito: ");
                                 do{
-                                    opcion = Integer.parseInt(br.readLine());
-                                }while((opcion < 100) || (opcion > 119) );
+                                    idUser = Integer.parseInt(br.readLine()); // Lee ID de producto seleccionado
+                                }while((idUser < 100) || (idUser > 119) );
                                 
                                 System.out.print("Ingrese la cantidad de unidades que desea agregar de ese producto: ");
                                 do{
-                                    opcion2 = Integer.parseInt(br.readLine());
-                                }while(opcion2 < 0 );
+                                    cantUser = Integer.parseInt(br.readLine()); // Lee cantidad a agregar
+                                }while(cantUser < 0 );
 
                                 // Bucle para obtener los datos del producto seleccionado en catalogo
                                 for(i=0; i<catalogo.length; i++){
-                                    if( (catalogo[i].id == opcion ) && (opcion2 <= catalogo[i].stock) ){ // busca el producto por id
-                                            catalogo[i].stock = catalogo[i].stock - opcion2; // Resta una unidad del stock para agregarlo al carrito
+                                    if( (catalogo[i].id == idUser ) && (cantUser <= catalogo[i].stock) ){ // busca el producto por id
+                                            catalogo[i].stock = catalogo[i].stock - cantUser; // Resta una unidad del stock para agregarlo al carrito
 
                                             if(catalogo[i].stock <= 0){ // Verifica si ya no hay existencias del producto en catalogo
                                                 catalogo[i] = new Producto(0,"",0,0,"");
                                             }// if
                                             
                                             // Bucle para ingresar el producto al carrito
-                                            for(i=0; i<carrito.length; i++){
-                                                if(carrito[i].id == opcion){ // ya existe el producto en carrito
-                                                        carrito[i].stock = carrito[i].stock+ opcion2;
-                                                        break;
+                                            for(i = 0; i < carrito.length; i++){
+                                                if(carrito[i].id == idUser){ // Busca ID de producto en carrito
+                                                    carrito[i].stock = carrito[i].stock + cantUser;
+                                                    break;
                                                 }// if
                                             }//for
                                             break;
                                     }//if
                                 }//for
 
-                                System.out.print("!!! Cantidad del Producto ha sido modificado !!!\n");  
+                                System.out.print("!!! Cantidad del Producto ha sido aumentado !!!\n");  
                                 System.out.print("Presione Enter para Continuar... ");  
                                 br.readLine();
                                 break;
@@ -171,17 +172,17 @@ public class ClienteCarrito {
                             case 2: // Restar Cantidad
                                 System.out.print("Ingrese el ID del producto que desea modificar en su carrito: ");
                                 do{
-                                    opcion = Integer.parseInt(br.readLine());
-                                }while((opcion < 100) || (opcion > 119) );
+                                    idUser = Integer.parseInt(br.readLine());
+                                }while((idUser < 100) || (idUser > 119) );
                                 
                                 System.out.print("Ingrese la cantidad de unidades que desea restar de ese producto: ");
                                 do{
-                                    opcion2 = Integer.parseInt(br.readLine());
-                                }while(opcion2 < 0);
+                                    cantUser = Integer.parseInt(br.readLine());
+                                }while(cantUser < 0);
 
                                 // Bucle para obtener los datos del producto seleccionado en carrito
                                 for(i=0; i<carrito.length; i++){
-                                    if( (carrito[i].id == opcion ) && (opcion2 <= carrito[i].stock) ){ // busca el producto por id
+                                    if( (carrito[i].id == idUser ) && (cantUser <= carrito[i].stock) ){ // busca el producto por id
                                         // se crea copia de respaldo por si previamente se han agregado todas las unidades 
                                         // disponibles de ese producto en catalogo y se eliminan todos del carrito
                                         auxProd.id = carrito[i].id;
@@ -190,42 +191,40 @@ public class ClienteCarrito {
                                         auxProd.stock = carrito[i].stock;
                                         auxProd.description = carrito[i].description;
                                         
-                                        carrito[i].stock = carrito[i].stock - opcion2; // Resta las unidades seleccionadas del producto en carrito
+                                        carrito[i].stock = carrito[i].stock - cantUser; // Resta las unidades seleccionadas del producto en carrito
 
                                         if(carrito[i].stock <= 0){ // Verifica si ya no hay existencias del producto en carrito
                                             carrito[i] = new Producto(0,"",0,0,""); // borra el producto del carrito
                                         }// if
 
-                                        opcion3 = 0;
-                        
+                                        flag = 0;
                                         // Bucle para ingresar el producto al catalogo
-                                        for(i=0; i<catalogo.length; i++){
+                                        for(i = 0; i < catalogo.length; i++){
                                             if(catalogo[i].id == auxProd.id){ // ya existe el producto en catalogo
-                                                    catalogo[i].stock = catalogo[i].stock + opcion2;
-                                                    opcion3 = 1;
-                                            } 
-
-                                            if((catalogo[i].id < 100) && (opcion3 < 1) ){
-                                                opcion = catalogo[i].id;
-                                                opcion3 = 2;
-                                            }
+                                                    catalogo[i].stock = catalogo[i].stock + cantUser;
+                                                    flag = 1; // Se ha encontrado existencia de producto en catalogo
+                                                    break;
+                                            }else{
+                                                if((catalogo[i].id == 0) && (flag < 1) ){
+                                                auxUser = i; // Guarda la posicion del espacio vacio. Util por si producto no existe en catalogo
+                                                flag = 2; // Indica que se ha encontrado el primer espacio vacio
+                                                }//if
+                                            }// else 
                                         }//for
 
-                                        // Producto es nuevo en catalogo
-                                        if(opcion3 == 2 ){
-                                                 catalogo[opcion].id = auxProd.id;
-                                                 catalogo[opcion].name = auxProd.name;
-                                                 catalogo[opcion].price = auxProd.price;
-                                                 catalogo[opcion].stock = auxProd.stock;
-                                                 catalogo[opcion].description = auxProd.description;
-                                             }
-                                        System.out.print("!!! Cantidad del Producto ha sido modificado !!!\n");  
+                                        if(flag == 2 ){ // Verifica si producto es nuevo en catalogo
+                                            catalogo[auxUser].id = auxProd.id;
+                                            catalogo[auxUser].name = auxProd.name;
+                                            catalogo[auxUser].price = auxProd.price;
+                                            catalogo[auxUser].stock = cantUser;
+                                            catalogo[auxUser].description = auxProd.description;
+                                        } // if
+                                        System.out.print("!!! Cantidad del Producto ha sido reducido !!!\n");  
                                         System.out.print("Presione Enter para Continuar... ");  
                                         br.readLine();
                                         break;
                                     }//if
                                 }//for
-
                                 break;
                                 
                             default:
@@ -239,12 +238,12 @@ public class ClienteCarrito {
                         verCatalogo(catalogo,carrito,2);
                         System.out.print("Ingrese el ID del producto que desea eliminar del carrito: ");
                         do{
-                            opcion = Integer.parseInt(br.readLine());
-                        }while((opcion < 100) || (opcion > 119) );
+                            idUser = Integer.parseInt(br.readLine());
+                        }while((idUser < 100) || (idUser > 119) );
                         
                         // Bucle para obtener los datos del producto seleccionado en carrito
                         for(i=0; i<carrito.length; i++){
-                            if(carrito[i].id == opcion){ // busca el producto por id
+                            if(carrito[i].id == idUser){ // busca el producto por id
                                 // almacena la informacion del producto temporalmente    
                                 auxProd.id = carrito[i].id;
                                 auxProd.name = carrito[i].name;
@@ -257,29 +256,29 @@ public class ClienteCarrito {
                                 break;    
                             }//if
                         }//for
-                        opcion2 = 0;
                         
+                        flag = 0;        
                         // Bucle para ingresar el producto al catalogo
                         for(i=0; i<catalogo.length; i++){
                             if(catalogo[i].id == auxProd.id){ // ya existe el producto en catalogo
-                                    catalogo[i].stock = catalogo[i].stock + auxProd.stock;
-                                    opcion2 = 1;
-                            } 
-                            
-                            if((catalogo[i].id < 100) && (opcion < 1) ){
-                                opcion = catalogo[i].id;
-                                opcion2 = 2;
-                            }
+                                catalogo[i].stock = catalogo[i].stock + auxProd.stock; 
+                                flag = 1; // El producto ya existe en catalogo 
+                                break;
+                            }else{
+                                if((catalogo[i].id == 0) && (flag < 1) ){
+                                auxUser = i; // Guarda posicion de primer espacio vacio, en caso de que producto no exista en catalogo
+                                flag = 2; // Indica que encontro un espacio vacio por si producto no existe en catalogo
+                                } // if
+                            } // else 
                         }//for
                         
-                        // Producto es nuevo en catalogo
-                        if(opcion2 == 2 ){
-                                 catalogo[opcion].id = auxProd.id;
-                                 catalogo[opcion].name = auxProd.name;
-                                 catalogo[opcion].price = auxProd.price;
-                                 catalogo[opcion].stock = auxProd.stock;
-                                 catalogo[opcion].description = auxProd.description;
-                             }
+                        if(flag == 2 ){ // Producto es nuevo en catalogo
+                            catalogo[auxUser].id = auxProd.id;
+                            catalogo[auxUser].name = auxProd.name;
+                            catalogo[auxUser].price = auxProd.price;
+                            catalogo[auxUser].stock = auxProd.stock;
+                            catalogo[auxUser].description = auxProd.description;
+                        } // if
                         System.out.print("!!! Producto ha sido eliminado del carrito !!!\n");  
                         System.out.print("Presione Enter para Continuar... ");  
                         br.readLine();
@@ -289,15 +288,13 @@ public class ClienteCarrito {
                         verCatalogo(catalogo,carrito,2);
                         System.out.print("Desea eliminar todos los productos de su carrito? ( 1 == SI // 2 == NO ): ");
                         do{
-                            opcion = Integer.parseInt(br.readLine());
-                        }while((opcion < 1) || (opcion > 2));
+                            auxUser = Integer.parseInt(br.readLine());
+                        }while((auxUser < 1) || (auxUser > 2));
                         
-                        
-                        if(opcion == 1){ // Se acepta vaciar carrito
+                        if(auxUser == 1){ // Se acepta vaciar carrito
                             // Bucle para vaciar carrito
-                            for(i=0; i<carrito.length; i++){
-                                if(carrito[i].id >= 100){ // verifica la existencia de un producto
-                                    // almacena la informacion del producto temporalmente    
+                            for(i = 0; i < carrito.length; i++){
+                                if(carrito[i].id >= 100){ // verifica la existencia de un producto   
                                     auxProd.id = carrito[i].id;
                                     auxProd.name = carrito[i].name;
                                     auxProd.price = carrito[i].price;
@@ -306,74 +303,70 @@ public class ClienteCarrito {
 
                                     // Elimina los datos del producto en carrito
                                     carrito[i] = new Producto(0,"",0,0,"");        
-                                    opcion2 = 0;
+                                    flag = 0;
                                     
                                     // Bucle para ingresar el producto al catalogo
-                                    for (Producto catalogo1 : catalogo) {
-                                        if (catalogo1.id == auxProd.id) {
-                                            // ya existe el producto en catalogo
-                                            catalogo1.stock = catalogo1.stock + auxProd.stock;
-                                            opcion2 = 1;
-                                        }
-                                        if ((catalogo1.id == 0) && (opcion2 < 1)) {
-                                            opcion = catalogo1.id;
-                                            opcion2 = 2;
-                                        }
+                                    for (j = 0; j < catalogo.length; j++){
+                                        if (catalogo[j].id == auxProd.id){ // ya existe el producto en catalogo
+                                            catalogo[j].stock = catalogo[j].stock + auxProd.stock;
+                                            flag = 1; // Indica que producto existe en catalogo
+                                        }else{
+                                            if ((catalogo[j].id == 0) && (flag < 1)){
+                                            auxUser = j; // Guarda primera posicion vacia por si producto no existe en catalogo
+                                            flag = 2; // Indica que producto no existe
+                                            } // if
+                                        } // else
                                     } //for
 
-                                     // Producto es nuevo en catalogo
-                                    if(opcion2 == 2 ){
-                                        catalogo[opcion].id = auxProd.id;
-                                        catalogo[opcion].name = auxProd.name;
-                                        catalogo[opcion].price = auxProd.price;
-                                        catalogo[opcion].stock = auxProd.stock;
-                                        catalogo[opcion].description = auxProd.description;
-                                    }
+                                    if(flag == 2 ){ // Producto es nuevo en catalogo
+                                        catalogo[auxUser].id = auxProd.id;
+                                        catalogo[auxUser].name = auxProd.name;
+                                        catalogo[auxUser].price = auxProd.price;
+                                        catalogo[auxUser].stock = auxProd.stock;
+                                        catalogo[auxUser].description = auxProd.description;
+                                    } // if
                                 }//if
                             }//for
                             System.out.print("!!! Carrito se ha vaciado correctamente !!!\n");  
                             System.out.print("Presione Enter para Continuar... ");  
                             br.readLine();
-                        }
+                        } // if
                         break;
                         
                     case 7: // Comprar productos del carrito
-                        // DIRECTAMENTE PONER IMPRESION DE PDF 
-                         System.out.print("!!! Procesando su compra !!! Por favor espere... \n");  
-                          System.out.print("Generando ticket de compra \"ticket.pdf\"... \n\n");  
-                            try{ 
-                                String auxiliar;
-                                DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MMMM/yyyy HH:mm:ss");
-                                final PdfWriter pdfWriter = new PdfWriter("./Cliente/ticket.pdf");
-                                final PdfDocument pdfDocument = new PdfDocument(pdfWriter);
+                        System.out.print("!!! Procesando su compra !!! Por favor espere... \n");  
+                        System.out.print("Generando ticket de compra \"ticket.pdf\"... \n\n");  
+                        try{ 
+                            String auxiliar; // Guarda el texto a imprimir en PDF
+                            DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd/MMMM/yyyy HH:mm:ss"); // Formato de Fecha y Hora
+                            final PdfWriter pdfWriter = new PdfWriter("./Cliente/ticket.pdf"); // Archivo PDF destino
+                            final PdfDocument pdfDocument = new PdfDocument(pdfWriter); // Flujo de salida a PDF
 
-                                try (Document document = new Document(pdfDocument)) {
-                                    document.add(new Paragraph("####################### TICKET DE COMPRA #######################"));
-                                    document.add(new Paragraph("Fecha de Compra: " + dtf.format(LocalDateTime.now())));
+                            try (Document document = new Document(pdfDocument)){ // Apertura de documento para escribir datos
+                                document.add(new Paragraph("####################### TICKET DE COMPRA #######################"));
+                                document.add(new Paragraph("Fecha de Compra: " + dtf.format(LocalDateTime.now())));
 
-                                    for(i=0; i<carrito.length; i++){ // Bucle para llenar los datos hasta llegar al final de fichero
-                                        if(carrito[i].id >= 100){
-                                            auxiliar = "ID: " + String.valueOf(carrito[i].id) + "\nProducto: " + carrito[i].name;
-                                            auxiliar = auxiliar + "\nPrecio Unitario: $" + String.valueOf(carrito[i].price);
-                                            auxiliar = auxiliar + "\nCantidad: " + String.valueOf(carrito[i].stock) + "\nDescripcion: " + carrito[i].description;
-                                            
-                                            subtotal = carrito[i].stock * carrito[i].price;
-                                            total = total + subtotal;
-                                            
-                                            auxiliar = auxiliar + "\nSubtotal: $" + String.valueOf(subtotal) + "\n\n";
-                                         
-                                            document.add(new Paragraph(auxiliar));
+                                for(i=0; i<carrito.length; i++){ // Bucle para llenar los datos hasta llegar al final de fichero
+                                    if(carrito[i].id >= 100){
+                                        auxiliar = "ID: " + String.valueOf(carrito[i].id) + "\nProducto: " + carrito[i].name;
+                                        auxiliar = auxiliar + "\nPrecio Unitario: $" + String.valueOf(carrito[i].price);
+                                        auxiliar = auxiliar + "\nCantidad: " + String.valueOf(carrito[i].stock) + "\nDescripcion: " + carrito[i].description;
 
-                                            // Elimina los datos del producto en carrito
-                                            carrito[i] = new Producto(0,"",0,0,"");
-                                        }// if
-                                    }// for
-                                    document.add(new Paragraph("Total de la compra: $" + String.valueOf(total)));
-                                    document.add(new Paragraph("################# !!! Gracias por su compra !!! ################"));
-                                    document.add(new Paragraph("\n*Gonzalez Barrientos Geovanni Daniel\n*Practica 1 \"Carrito de Compras\" \n*3CV18"));
-                                    document.close();
-                                }
-                            
+                                        subtotal = carrito[i].stock * carrito[i].price;
+                                        total = total + subtotal;
+                                        auxiliar = auxiliar + "\nSubtotal: $" + String.valueOf(subtotal) + "\n\n";
+
+                                        document.add(new Paragraph(auxiliar));
+
+                                        // Elimina los datos del producto en carrito
+                                        carrito[i] = new Producto(0,"",0,0,"");
+                                    }// if
+                                }// for
+                                document.add(new Paragraph("Total de la compra: $" + String.valueOf(total)));
+                                document.add(new Paragraph("################# !!! Gracias por su compra !!! ################"));
+                                document.add(new Paragraph("\n*Gonzalez Barrientos Geovanni Daniel\n*Practica 1 \"Carrito de Compras\" \n*3CV18"));
+                                document.close();
+                            } // try
                         }catch(NumberFormatException e){
                         }// catch
                         System.out.print("!!! Compra realizada con exito !!! Gracias por realizar su compra.\n");  
@@ -385,9 +378,8 @@ public class ClienteCarrito {
                         System.out.print("!!! Gracias por utilizar el programa !!!\n");  
                         
                         // Bucle para vaciar carrito
-                        for(i=0; i<carrito.length; i++){
-                            if(carrito[i].id >= 100){ // verifica la existencia de un producto
-                                // almacena la informacion del producto temporalmente    
+                        for(i = 0; i < carrito.length; i++){
+                            if(carrito[i].id >= 100){ // verifica la existencia de un producto    
                                 auxProd.id = carrito[i].id;
                                 auxProd.name = carrito[i].name;
                                 auxProd.price = carrito[i].price;
@@ -397,30 +389,28 @@ public class ClienteCarrito {
                                 // Elimina los datos del producto en carrito
                                 carrito[i] = new Producto(0,"",0,0,"");        
                                 
-                                opcion = 0;
-                                opcion2 = 0;
-
+                                auxUser = 0;
+                                flag = 0;
                                 // Bucle para ingresar el producto al catalogo
-                                for (Producto catalogo1 : catalogo) {
-                                    if (catalogo1.id == auxProd.id) {
-                                        // ya existe el producto en catalogo
-                                        catalogo1.stock = catalogo1.stock + auxProd.stock;
-                                        opcion2 = 1;
-                                    }
-                                    if ((catalogo1.id == 0) && (opcion2 < 1)) {
-                                        opcion = catalogo1.id;
-                                        opcion2 = 2;
-                                    }
+                                for (j = 0; j < catalogo.length; j++) {
+                                    if (catalogo[j].id == auxProd.id){ // ya existe el producto en catalogo
+                                        catalogo[j].stock = catalogo[j].stock + auxProd.stock;
+                                        flag = 1; // Indica que producto existe en catalogo
+                                    }else {
+                                        if ((catalogo[j].id == 0) && (flag < 1)) {
+                                        auxUser = j; // Guarda posicion vacia en caso de no existir producto
+                                        flag = 2; // Indica que producto no existe en catalogo
+                                        } // if
+                                    } // else
                                 } //for
 
-                                // Producto es nuevo en catalogo
-                                if(opcion2 == 2 ){
-                                    catalogo[opcion].id = auxProd.id;
-                                    catalogo[opcion].name = auxProd.name;
-                                    catalogo[opcion].price = auxProd.price;
-                                    catalogo[opcion].stock = auxProd.stock;
-                                    catalogo[opcion].description = auxProd.description;
-                                }
+                                if(flag == 2){ // Producto es nuevo en catalogo
+                                    catalogo[auxUser].id = auxProd.id;
+                                    catalogo[auxUser].name = auxProd.name;
+                                    catalogo[auxUser].price = auxProd.price;
+                                    catalogo[auxUser].stock = auxProd.stock;
+                                    catalogo[auxUser].description = auxProd.description;
+                                } // if
                             }//if
                         }//for
                         break;
@@ -430,11 +420,9 @@ public class ClienteCarrito {
                         System.out.print("Presione Enter para reintentar... ");  
                         br.readLine();
                 }// switch menu principal
-                
             }while(menu != 0);// while menu principal
             
             uploadCatalogo(cl, catalogo); // Se actualiza catalogo y se envia al servidor
-
         }catch(IOException | NumberFormatException e){
         }// catch  
     }// menuCliente
@@ -508,7 +496,7 @@ public class ClienteCarrito {
                     dos.flush();
                     recibidos = recibidos+n;
                     porcentaje = (int)(recibidos*100/paquete);
-                }
+                } // if
                 
                 //System.out.print("Recibido: " + porcentaje + "%\r");
                 System.out.print("\n!!! Archivo \"" + nameArchivos + "\" Recibido desde: " + directorio + " !!!");
