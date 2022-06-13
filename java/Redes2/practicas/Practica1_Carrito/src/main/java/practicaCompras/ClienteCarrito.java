@@ -363,6 +363,7 @@ public class ClienteCarrito {
                         break;
                         
                     case 7: // Comprar productos del carrito
+                        total = 0;
                         verCatalogo(catalogo,carrito,2);
                         do{
                             System.out.print("Desea comprar todos los productos de su carrito? ( 1 == SI // 2 == NO ): ");
