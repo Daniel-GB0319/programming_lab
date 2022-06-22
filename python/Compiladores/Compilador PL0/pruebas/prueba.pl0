@@ -1,0 +1,16 @@
+CONST
+  m=7,
+  n=85;
+
+#COMENTARIO
+
+VAR
+  x, y, z, f, g;
+
+PROCEDURE multiply;
+VAR a, b;
+BEGIN
+  a := x;
+  b := y;
+  z := 0;
+END;

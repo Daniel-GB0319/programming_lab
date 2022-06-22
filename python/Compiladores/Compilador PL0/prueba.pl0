@@ -1,0 +1,16 @@
+CONST
+  m=10,
+  n=20;
+
+#COMENTARIO
+
+VAR
+  x, Y, z, F, g;
+
+PROCEDURE multiplicar;
+VAR a, b;
+BEGIN
+  a := x;
+  b := y;
+  z := 0;
+END;
