@@ -16,7 +16,44 @@
     "supplier": null,
     "topology": {
         "computes": [],
-        "drawings": [],
+        "drawings": [
+            {
+                "drawing_id": "aa22733b-d1ba-42dd-8a9a-acbaa2376a87",
+                "locked": false,
+                "rotation": 0,
+                "svg": "<svg height=\"29\" width=\"100\"><text fill=\"#000000\" fill-opacity=\"1.0\" font-family=\"TypeWriter\" font-size=\"10.0\" font-weight=\"bold\">10.10.1.10</text></svg>",
+                "x": -306,
+                "y": 53,
+                "z": 2
+            },
+            {
+                "drawing_id": "3b285aad-d4e3-4a7a-9071-59f03ff01909",
+                "locked": false,
+                "rotation": 0,
+                "svg": "<svg height=\"50\" width=\"164\"><text fill=\"#000000\" fill-opacity=\"1.0\" font-family=\"TypeWriter\" font-size=\"10.0\" font-weight=\"bold\">LAN 1\nRed 10.10.1.0 /24</text></svg>",
+                "x": -234,
+                "y": -209,
+                "z": 2
+            },
+            {
+                "drawing_id": "0b18cdb2-b009-43ab-bdaf-df085eb31d1f",
+                "locked": false,
+                "rotation": 0,
+                "svg": "<svg height=\"29\" width=\"100\"><text fill=\"#000000\" fill-opacity=\"1.0\" font-family=\"TypeWriter\" font-size=\"10.0\" font-weight=\"bold\">10.10.2.10</text></svg>",
+                "x": 269,
+                "y": 47,
+                "z": 2
+            },
+            {
+                "drawing_id": "bb034867-9f98-46f0-8af6-493a1c3f25a3",
+                "locked": false,
+                "rotation": 0,
+                "svg": "<svg height=\"50\" width=\"164\"><text fill=\"#000000\" fill-opacity=\"1.0\" font-family=\"TypeWriter\" font-size=\"10.0\" font-weight=\"bold\">LAN 2\nRed 10.10.2.0 /24</text></svg>",
+                "x": 135,
+                "y": -211,
+                "z": 2
+            }
+        ],
         "links": [
             {
                 "filters": {},
@@ -159,12 +196,12 @@
                 "label": {
                     "rotation": 0,
                     "style": "font-family: TypeWriter;font-size: 10.0;font-weight: bold;fill: #000000;fill-opacity: 1.0;",
-                    "text": "R1",
-                    "x": 17,
+                    "text": "ROUTER",
+                    "x": -6,
                     "y": -25
                 },
                 "locked": false,
-                "name": "R1",
+                "name": "ROUTER",
                 "node_id": "b1e243f7-9afa-43fa-9ecb-738ee04368b1",
                 "node_type": "dynamips",
                 "port_name_format": "Ethernet{0}",
@@ -213,8 +250,8 @@
                 "symbol": ":/symbols/router.svg",
                 "template_id": "1102e49e-176e-4515-8eee-b42240077d3f",
                 "width": 66,
-                "x": 10,
-                "y": -122,
+                "x": 9,
+                "y": -212,
                 "z": 1
             },
             {
@@ -252,8 +289,8 @@
                 "symbol": ":/symbols/vbox_guest.svg",
                 "template_id": "383767a6-b0cb-4c34-b1e9-e66c36883898",
                 "width": 65,
-                "x": -210,
-                "y": 15,
+                "x": -290,
+                "y": -20,
                 "z": 1
             },
             {
@@ -267,12 +304,12 @@
                 "label": {
                     "rotation": 0,
                     "style": "font-family: TypeWriter;font-size: 10.0;font-weight: bold;fill: #000000;fill-opacity: 1.0;",
-                    "text": "PC1",
-                    "x": 12,
+                    "text": "COMPUTER-2",
+                    "x": -28,
                     "y": -25
                 },
                 "locked": false,
-                "name": "PC1",
+                "name": "COMPUTER-2",
                 "node_id": "e3b18978-fdad-4810-af97-f531580d0c55",
                 "node_type": "vpcs",
                 "port_name_format": "Ethernet{0}",
@@ -281,8 +318,8 @@
                 "symbol": ":/symbols/vpcs_guest.svg",
                 "template_id": "19021f99-e36f-394d-b4a1-8aaa902ab9cc",
                 "width": 65,
-                "x": 226,
-                "y": 29,
+                "x": 286,
+                "y": -23,
                 "z": 1
             },
             {
@@ -361,8 +398,8 @@
                 "symbol": ":/symbols/ethernet_switch.svg",
                 "template_id": "1966b864-93e7-32d5-965f-001384eec461",
                 "width": 72,
-                "x": -176,
-                "y": -104,
+                "x": -139,
+                "y": -131,
                 "z": 1
             },
             {
@@ -441,8 +478,8 @@
                 "symbol": ":/symbols/ethernet_switch.svg",
                 "template_id": "1966b864-93e7-32d5-965f-001384eec461",
                 "width": 72,
-                "x": 219,
-                "y": -94,
+                "x": 157,
+                "y": -121,
                 "z": 1
             }
         ]
