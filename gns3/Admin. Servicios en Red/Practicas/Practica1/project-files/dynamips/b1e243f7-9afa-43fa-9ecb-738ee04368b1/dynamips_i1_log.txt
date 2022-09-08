@@ -1,0 +1,50 @@
+Sep 04 20:09:23.348 HYPERVISOR: Release 0.2.17-x86/Windows (tag 2017072410)
+Sep 04 20:09:23.349 HYPERVISOR: Started on IP = localhost, TCP port = 52050.
+Sep 04 20:09:23.429 HYPERVISOR: exec_cmd: hypervisor version 
+Sep 04 20:09:23.429 HYPERVISOR: exec_cmd: hypervisor working_dir C:\Users\danie\Documents\Github\programming_lab\gns3\Admin. Servicios en Red\Practicas\Practica1\project-files\dynamips 
+Sep 04 20:09:23.601 GENERAL: working_dir=C:\Users\danie\Documents\Github\programming_lab\gns3\Admin. Servicios en Red\Practicas\Practica1\project-files\dynamips
+Sep 04 20:09:23.602 HYPERVISOR: exec_cmd: hypervisor working_dir C:\Users\danie\Documents\Github\programming_lab\gns3\Admin. Servicios en Red\Practicas\Practica1\project-files\dynamips\b1e243f7-9afa-43fa-9ecb-738ee04368b1 
+Sep 04 20:09:23.604 GENERAL: working_dir=C:\Users\danie\Documents\Github\programming_lab\gns3\Admin. Servicios en Red\Practicas\Practica1\project-files\dynamips\b1e243f7-9afa-43fa-9ecb-738ee04368b1
+Sep 04 20:09:23.605 HYPERVISOR: exec_cmd: vm create ROUTER 1 c7200 
+Sep 04 20:09:23.612 VM: VM ROUTER created.
+Sep 04 20:09:23.614 HYPERVISOR: exec_cmd: vm set_con_tcp_port ROUTER 5000 
+Sep 04 20:09:23.615 HYPERVISOR: exec_cmd: c7200 get_mac_addr ROUTER 
+Sep 04 20:09:23.616 HYPERVISOR: exec_cmd: vm get_status ROUTER 
+Sep 04 20:09:23.616 HYPERVISOR: exec_cmd: vm slot_add_binding ROUTER 0 0 C7200-IO-FE 
+Sep 04 20:09:23.618 HYPERVISOR: exec_cmd: vm set_disk0 ROUTER 0 
+Sep 04 20:09:23.619 HYPERVISOR: exec_cmd: vm set_exec_area ROUTER 64 
+Sep 04 20:09:23.619 HYPERVISOR: exec_cmd: vm get_status ROUTER 
+Sep 04 20:09:23.619 HYPERVISOR: exec_cmd: vm set_idle_pc ROUTER 0x608927c0 
+Sep 04 20:09:23.633 HYPERVISOR: exec_cmd: vm set_ios ROUTER C:/Users/danie/GNS3/images/IOS/c7200-a3jk9s-mz.124-25g.image 
+Sep 04 20:09:23.634 HYPERVISOR: exec_cmd: c7200 set_mac_addr ROUTER ca01.526c.0000 
+Sep 04 20:09:23.634 HYPERVISOR: exec_cmd: vm set_nvram ROUTER 512 
+Sep 04 20:09:23.634 HYPERVISOR: exec_cmd: vm set_ram ROUTER 512 
+Sep 04 20:09:23.635 HYPERVISOR: exec_cmd: vm get_status ROUTER 
+Sep 04 20:09:23.635 HYPERVISOR: exec_cmd: vm slot_add_binding ROUTER 1 0 PA-2FE-TX 
+Sep 04 20:09:25.577 HYPERVISOR: exec_cmd: nio create_udp udp-60dac441-78a2-4905-84f4-1ce4307f354e 10002 127.0.0.1 10003 
+Sep 04 20:09:26.575 HYPERVISOR: exec_cmd: vm slot_add_nio_binding ROUTER 1 0 udp-60dac441-78a2-4905-84f4-1ce4307f354e 
+Sep 04 20:09:26.576 HYPERVISOR: exec_cmd: vm get_status ROUTER 
+Sep 04 20:09:26.712 HYPERVISOR: exec_cmd: nio create_udp udp-3bce6325-1748-4986-8e3e-3258210db9d4 10008 127.0.0.1 10009 
+Sep 04 20:09:26.715 HYPERVISOR: exec_cmd: vm slot_add_nio_binding ROUTER 0 0 udp-3bce6325-1748-4986-8e3e-3258210db9d4 
+Sep 04 20:09:26.715 HYPERVISOR: exec_cmd: vm get_status ROUTER 
+Sep 04 20:09:37.209 HYPERVISOR: exec_cmd: vm create Ghost 0 c7200 
+Sep 04 20:09:37.211 VM: VM Ghost created.
+Sep 04 20:09:37.522 HYPERVISOR: exec_cmd: vm set_ios Ghost C:/Users/danie/GNS3/images/IOS/c7200-a3jk9s-mz.124-25g.image 
+Sep 04 20:09:37.523 HYPERVISOR: exec_cmd: vm set_ghost_status Ghost 1 
+Sep 04 20:09:37.525 HYPERVISOR: exec_cmd: vm set_ghost_file Ghost C:\Users\danie\Documents\Github\programming_lab\gns3\Admin. Servicios en Red\Practicas\Practica1\project-files\dynamips\c7200-a3jk9s-mz.124-25g.image-512.ghost 
+Sep 04 20:09:37.525 HYPERVISOR: exec_cmd: vm set_ram Ghost 512 
+Sep 04 20:09:37.526 HYPERVISOR: exec_cmd: vm get_status Ghost 
+Sep 04 20:09:37.541 HYPERVISOR: exec_cmd: vm set_config Ghost configs\i0_startup-config.cfg 
+Sep 04 20:09:37.541 HYPERVISOR: exec_cmd: vm start Ghost 
+Sep 04 20:09:38.697 HYPERVISOR: exec_cmd: vm get_status Ghost 
+Sep 04 20:09:38.697 HYPERVISOR: exec_cmd: vm stop Ghost 
+Sep 04 20:09:38.883 VM: VM Ghost shutdown.
+Sep 04 20:09:38.884 HYPERVISOR: exec_cmd: vm extract_config Ghost 
+Sep 04 20:09:38.888 HYPERVISOR: exec_cmd: vm clean_delete Ghost 
+Sep 04 20:09:38.888 VM: VM Ghost destroyed.
+Sep 04 20:09:38.897 HYPERVISOR: exec_cmd: vm set_ghost_status ROUTER 2 
+Sep 04 20:09:38.898 HYPERVISOR: exec_cmd: vm set_ghost_file ROUTER C:\Users\danie\Documents\Github\programming_lab\gns3\Admin. Servicios en Red\Practicas\Practica1\project-files\dynamips\c7200-a3jk9s-mz.124-25g.image-512.ghost 
+Sep 04 20:09:38.898 HYPERVISOR: exec_cmd: vm get_status ROUTER 
+Sep 04 20:09:38.899 HYPERVISOR: exec_cmd: vm set_config ROUTER configs\i1_startup-config.cfg 
+Sep 04 20:09:38.899 HYPERVISOR: exec_cmd: vm start ROUTER 
+Sep 04 20:10:09.218 HYPERVISOR: exec_cmd: vm extract_config ROUTER 
