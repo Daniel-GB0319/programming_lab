@@ -13,7 +13,7 @@ public class Client {
         static Object obj = new Object(); // Objeto para synchronized
         
         Cliente(String arch){ // Constructor Servidor
-            this.arch = arch; // Nombre del hilo actual
+            this.arch = arch; // Nombre del archivo pasado como parametro
         } // constructor Cliente
         
         // Procedimientos a realizar en los hilos
@@ -28,30 +28,31 @@ public class Client {
 
                         for(;;){ // Se implementa los reintentos de conexion
                             try{
-                                cl = socketSeguro.createSocket("localhost",4000); // catch
+                                cl = socketSeguro.createSocket("localhost",4000); // Conexion a servidor
                                 break;
                             }catch(IOException e){
-                                Thread.sleep(1000);
+                                Thread.sleep(1000); // Pausa de 1s
                             } // catch
                         }// for
                         
-                        DataOutputStream dos; // Flujo salida Servidor
-                        DataInputStream dis = new DataInputStream(new FileInputStream(new File("./"+nameArch)));
-                        dos = new DataOutputStream(cl.getOutputStream()); // Flujo salida Servidor
+                        DataOutputStream dos; // Flujo de salida
+                        DataInputStream dis = new DataInputStream(new FileInputStream(new File("./"+nameArch))); // Flujo de entrada desde archivo
+                        dos = new DataOutputStream(cl.getOutputStream()); // Flujo salida hacia Servidor
 
                         System.out.println("\n-- Conexion con Servidor establecido --");
                         System.out.println("Espere mientras enviamos "+nameArch+" al Servidor... ");
+                        
                         // Se envian datos necesarios para envio de ficheros
-                        dos.writeUTF(nameArch); // Envia el nombre del archivo al cliente
+                        dos.writeUTF(nameArch); // Envia el nombre del archivo al servidor
                         dos.flush();
-                        dos.writeInt(paquete); // Envia el tamaño del archivo al cliente
+                        dos.writeInt(paquete); // Envia el tamaño del archivo al servidor
                         dos.flush();
 
                         // Se inicia envio de archivos en paquetes
-                        byte[] b = new byte[1024]; 
+                        byte[] b = new byte[1024]; // Tamaño del paquete
                         long enviados = 0;
                         int n = 0;
-                        while(enviados<paquete){ // Bucle para enviar bytes
+                        while(enviados<paquete){ // Bucle para enviar paquetes
                             n = dis.read(b);
                             dos.write(b,0,n);
                             dos.flush();

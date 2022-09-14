@@ -16,27 +16,27 @@ public class Server {
         public void run(){
             try{
                 synchronized(obj){
-                    DataInputStream dis = new DataInputStream(cl.getInputStream()); // Flujo de entrada
+                    DataInputStream dis = new DataInputStream(cl.getInputStream()); // Flujo de entrada desde cliente
                     DataOutputStream dos = null; // Flujo de salida
                     
                     String nameArch = dis.readUTF(); // Recibe el nombre del archivo entrante
                     int paquete = dis.readInt(); // Se recibe el tamaño del archivo entrante
                     String respuesta; // Sirve para enviar respuesta a cliente
                     
-                    // Se inicializa el flujo de salida para guardar el archivo a descargar
+                    // Flujo de salida para guardar el archivo a descargar
                     dos = new DataOutputStream(new FileOutputStream(new File("./" + nameArch))); 
 
                     // Procedimiento para realizar la descarga del archivo
-                    byte[] b = new byte[1024]; // Variable para indicar el tamaño de los paquetes a recibir
+                    byte[] b = new byte[1024]; // Tamaño de los paquetes a recibir
                     int n = 0;
 
-                    for(long j = 0; j < paquete/1024;j++){ // Bucle para la transferencia de paquetes de bytes
+                    for(long j = 0; j < paquete/1024;j++){ // Bucle para la descarga de paquetes
                         n = dis.read(b);
                         dos.write(b,0,n);
                         dos.flush();
                     } // Termina for
 
-                    if(paquete%1024!=0){ // Condicion if para indicar si se ha enviado el ultimo paquete desde cliente
+                    if(paquete%1024!=0){ // Verifica si ha llegado el ultimo paquete desde cliente
                         b = new byte [(int)paquete%1024];
                         n = dis.read(b);
                         dos.write(b,0,n);
@@ -45,10 +45,9 @@ public class Server {
                     dos.flush();
                   
                     // Se verifica si el archivo se ha descargado y guardado con exito
-                    File archivo = new File("./"+nameArch); //Sirve para verificar que archivo a descargar existe
+                    File archivo = new File("./"+nameArch);
                     if(archivo.exists() && archivo.length() == paquete){ // Descarga correcta
                         respuesta = "Archivo "+nameArch+" == OK";
-                        
                     }else{ // Descarga incorrecta
                         respuesta = "El Servidor no pudo guardar el archivo "+nameArch;
                     }// else
