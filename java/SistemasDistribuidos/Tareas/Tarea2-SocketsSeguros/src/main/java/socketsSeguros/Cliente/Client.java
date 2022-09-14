@@ -1,14 +1,16 @@
-package socketsSeguros;
+package socketsSeguros.Cliente;
 import java.io.*;
 import java.net.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.net.ssl.SSLSocketFactory;
 
 public class Client {
     static class Cliente extends Thread{ // Clase para Hilos
-        Socket cl = null;
+        SSLSocketFactory socketSeguro = (SSLSocketFactory) SSLSocketFactory.getDefault();
+        Socket cl = null; // Socket del cliente
         String arch; // Nombre del archivo a enviar
-        static Object obj = new Object();
+        static Object obj = new Object(); // Objeto para synchronized
         
         Cliente(String arch){ // Constructor Servidor
             this.arch = arch; // Nombre del hilo actual
@@ -17,64 +19,59 @@ public class Client {
         // Procedimientos a realizar en los hilos
         public void run(){ 
             try{           
-                File f = new File("./Cliente/"+arch); // Archivo a enviar   
-                String pathArch = f.getCanonicalPath(); // Almacena la ruta canonica del archivo a enviar
-                String nameArch = f.getName() ; // Almacena el nombre del archivo a enviar
-                int paquete = (int) f.length(); // Almacena el tamaño del archivo a enviar
+                File f = new File("./"+arch); // Archivo a enviar   
                 
-                // Se implementa los reintentos de conexion
-                 for(;;){
-                    try{
-                        cl = new Socket("localhost",4000);
-                        break;
-                    }catch(IOException e){
-                        try {
-                            Thread.sleep(100);
-                        } catch (InterruptedException ex) {
-                            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                    } // catch
-                }// for
-
-                System.out.println("\n-- Conexion con Servidor establecido --");
-                System.out.println("Espere mientras enviamos "+nameArch+" al Servidor... ");
-                
+                if(f.exists()){ // Verifica si existe el archivo seleccionado
                     synchronized(obj){
-                        DataOutputStream  dos; // Flujo salida Servidor
-                        DataInputStream dis = new DataInputStream(new FileInputStream(new File("./Cliente/"+nameArch))); // Flujo entrada Servidor
+                        String nameArch = f.getName() ; // Obtiene el nombre del archivo a enviar
+                        int paquete = (int) f.length(); // Obtiene el tamaño del archivo a enviar
+
+                        for(;;){ // Se implementa los reintentos de conexion
+                            try{
+                                cl = socketSeguro.createSocket("localhost",4000); // catch
+                                break;
+                            }catch(IOException e){
+                                Thread.sleep(1000);
+                            } // catch
+                        }// for
                         
+                        DataOutputStream dos; // Flujo salida Servidor
+                        DataInputStream dis = new DataInputStream(new FileInputStream(new File("./"+nameArch)));
                         dos = new DataOutputStream(cl.getOutputStream()); // Flujo salida Servidor
+
+                        System.out.println("\n-- Conexion con Servidor establecido --");
+                        System.out.println("Espere mientras enviamos "+nameArch+" al Servidor... ");
                         // Se envian datos necesarios para envio de ficheros
-                        dos.writeUTF(nameArch); // Envia el nombre del archivo seleccionado al cliente
+                        dos.writeUTF(nameArch); // Envia el nombre del archivo al cliente
                         dos.flush();
-                        dos.writeUTF(pathArch); // Envia la ruta relativa del archivo seleccionado al cliente
-                        dos.flush();
-                        dos.writeInt(paquete); // Envia el tamaño del archivo seleccionado al cliente
+                        dos.writeInt(paquete); // Envia el tamaño del archivo al cliente
                         dos.flush();
 
                         // Se inicia envio de archivos en paquetes
-                        byte[] b = new byte[1024]; // 100 KB
+                        byte[] b = new byte[1024]; 
                         long enviados = 0;
                         int n = 0;
                         while(enviados<paquete){ // Bucle para enviar bytes
                             n = dis.read(b);
                             dos.write(b,0,n);
                             dos.flush();
-
                             enviados = enviados + n;
                         } // Termina while
                         dos.flush();
-
+                     
                         dis = new DataInputStream(cl.getInputStream()); // Flujo de entrada desde servidor
                         String resp_servidor = dis.readUTF(); // Se recibe respuesta de Servidor
                         System.out.println("Respuesta del Servidor: "+resp_servidor);
                         dis.close();
                         dos.close();  
-                    } // synchronized
-                    
-                cl.close(); // Se cierra conexion con Servidor
-
+                        cl.close(); // Se cierra conexion con Servidor   
+                    } // synchronized 
+                }else{ // Archivo no existe
+                    System.out.println("\n!!! "+arch+" no fue encontrado !!!");
+                } // else
             }catch(IOException | NumberFormatException e){
+            } catch (InterruptedException ex) {
+                Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
             } // catch
         } // run
     } // clase Cliente
@@ -82,14 +79,16 @@ public class Client {
     
     // Funcion main
     public static void main(String[] args) throws Exception {
+        // Se indica el repositorio de confianza del cliente y password 
+        System.setProperty("javax.net.ssl.trustStore","keystoreClient.jks");
+        System.setProperty("javax.net.ssl.trustStorePassword","abcd1234");
         Cliente hilos[] = new Cliente[10] ; // Se inicializa el objeto para los threads 
        
         System.out.println("\n\n%% Gonzalez Barrientos Geovanni Daniel - Tarea 2 - Sistemas Distribuidos 4CV13 %%");
         System.out.println("\n*** CLIENTE INICIADO ***");
         System.out.println("Espere mientras se inicia la conexion con Servidor... ");
             
-       
-        
+        // Se crean los hilos necesarios para enviar archivos
         for(int i=0; i<args.length ; i++){
             hilos[i] = new Cliente(args[i]);
             hilos[i].start(); // Se inicia el hilo para enviar archivos
@@ -98,7 +97,6 @@ public class Client {
         for(int i=0; i<args.length ; i++){
             hilos[i].join(); // Se espera a que todos los hilos finalicen
         }// for
-        
-        System.out.println("\n-- Conexion con Servidor Finalizado --");
+        System.out.println("\n\n*** CLIENTE FINALIZADO ***\n");
     } // main
 }
