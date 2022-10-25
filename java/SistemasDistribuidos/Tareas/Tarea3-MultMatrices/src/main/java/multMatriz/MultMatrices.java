@@ -1,261 +1,308 @@
 package multMatriz;
 import java.io.*;
 import java.net.*;
-import java.nio.ByteBuffer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 public class MultMatrices {
-    static class MultiplicarMatrices extends Thread{ // Clase para Hilos
-        String ipAddress; // Direccion IP del nodo para socket
-        int numNodo; // Nodo en cuestion
-        static int N; // Tamaño de la matriz cuadrada
-        static float[][] A; // Matriz A
-        static float[][] B; // Matriz B
-        static float[][] C; // Resultado de la multiplicacion entre A y B
-        float checksum = 0; // Suma para verificar que el resultado es correcto
-        static Object obj = new Object(); // Objeto para sincronizar los hilos
+    public static class Matriz implements Serializable {
+        float[][] matriz; // Contenido Matriz
+        String name; // Nombre de la matriz
+        int M,N; // Tamaño de la matriz cuadrada
+        transient float checksum = 0; // Suma para verificar resultado
+        transient int i, j, k; // Auxiliares
+
+        public Matriz(int M, int N, String name){ // Crea la matriz
+           this.M = M;
+           this.N = N;
+           this.name = name;
+           matriz = new float[M][N];
+        } // matriz
+
+        public void initMatriz(){ // Inicializa la matriz
+            for(i=0; i<M ;i++)
+                for(j=0; j<N ; j++){
+                    switch(name){
+                        case "A": // Matriz A
+                            matriz[i][j] = i + 3*j; break;
+                        case "B": // Matriz B
+                            matriz[i][j] = 2*i - j; break;
+                        default: // Matriz C
+                            matriz[i][j] = 0;
+                    } // switch
+                } // for
+        } // initMatriz
         
-        MultiplicarMatrices(String ipAddress, int numNodo){ // Constructor Servidor
+        public void printMatriz(){ // Imprime la matriz
+            if(N < 15){ // Se puede imprimir
+                System.out.println("Matriz "+name+": ");
+                for(i=0; i<M ;i++){
+                    for(j=0; j<N ; j++){
+                        System.out.print(matriz[i][j] + " ");           
+                    } 
+                    System.out.println();
+                } // for
+
+            }else{ // No se puede imprimir
+                System.out.println("!! Matriz demasiado grande, no se puede imprimir !! N="+N);
+            } // else
+        }// printMatriz
+
+        public void traspMatriz(){ // Calcula traspuesta de la matriz
+            for(i=0; i<M ;i++)
+                for(j=0; j<N ; j++){
+                    float x = matriz[i][j];
+                    matriz[i][j] = matriz[j][i];
+                    matriz[j][i] = x;
+                } // for
+        } // traspuestaMatriz
+        
+        public void calcChecksum(){ // Calcula el checksum
+            checksum = 0;
+            for(i=0; i<M ;i++)
+                for(j=0; j<N ; j++)
+                    checksum = checksum + matriz[i][j]; 
+
+            System.out.println("Checksum calculado = "+ checksum);
+        } // calcChecksum
+        
+        public void multiplicarMatriz(Matriz M1, Matriz M2){ // Multiplica 2 matrices
+            for(i=0; i<M; i++)
+                for(j=0; j<N; j++)
+                    for(k=0; k<N; k++)
+                        this.matriz[i][j] += M1.matriz[i][k] * M2.matriz[j][k];
+        } // multiplicarMatriz 
+        
+        public void copiarMitad(Matriz aux, int x){ // Copia mitad de una matriz
+            for(i=0; i<M ;i++)
+                for(j=0; j<N ; j++)
+                    switch(x){
+                        case 1: // Matriz A1 y A2
+                            matriz[i][j] = aux.matriz[i][j]; break;
+                        default: // Matriz A1 y A2
+                            matriz[i][j] = aux.matriz[i][j]; // ARREGLAR OPERACION PARA COPIAR A3 Y A4
+                    } // switch
+        } // copiarMitad
+    }// Clase Matriz
+    
+    
+    // Clase para hilos
+    static class ThreadMatriz extends Thread{
+        String ipAddress; // Direccion IP del nodo
+        int numNodo; // Numero del nodo en ejecución
+        static Object obj = new Object(); // Objeto para sincronizar los hilos
+        static Matriz A, B, C; // Matrices
+        int N; // Tamaño de Matriz
+        
+        ThreadMatriz(String ipAddress, int numNodo, Matriz A, Matriz B, Matriz C, int N){ // Constructor Servidor
             this.ipAddress = ipAddress; // Se asigna socket del cliente en navegador web
             this.numNodo = numNodo; // Nombre del hilo actual
+            this.A = A;
+            this.B = B;
+            this.C = C;
+            this.N = N;
         } // constructor Servidor
         
         // Procedimientos a realizar en los hilos
         public void run(){ 
-            try{   
-                switch(numNodo){
-                    case 0: // Nodo que genera matrices
-                        BufferedReader entrada = new BufferedReader(new InputStreamReader(System.in)); // Lectura de Teclado
-                        int i = 0,j = 0; // Variables para utilizar en sentencias for
-                        
-                        do{ // Se lee el tamaño de la matriz a trabajar
-                            System.out.println("\n\n Ingrese el tamaño de la matriz cuadrada (Solo numeros divisibles entre 4): ");
-                            N = Integer.parseInt(entrada.readLine()); // Lee el tamaño de la matriz desde teclado
-                        }while(N%4 != 0);
-                        
-                        // Se crean las matrices de tamaño "N"
-                        A = new float[N][N];
-                        B = new float[N][N];
-                        C = new float[N][N];
-                        
-                        // Se inicializan las matrices A y B
-                        for(i=0; i<N ;i++)
-                            for(j=0; j<N ; j++){
-                                A[i][j] = i + 3*j ;
-                                B[i][j] = 2*i - j;
-                                C[i][j] = 0;
-                            } // for inicializar matrices
+            try{ 
+                if(numNodo == 0){ // Instrucciones para enviar partes de matriz A y B a cada nodo remoto (1 y 2) 
+                    InetAddress ip = InetAddress.getByName(ipAddress); // Se convierte string a formato ip 
+                    Socket cl = new Socket(ip, 4000); // Se crea conexion con un Servidor A
+                    DataInputStream dis = new DataInputStream(cl.getInputStream()); // Flujo de entrada desde cliente
+                    DataOutputStream dos = new DataOutputStream(cl.getOutputStream()); // Flujo salida
+                    
+                    int nodoID = dis.readInt(); // Recibe numero de nodo que tiene el servidor remoto 
+                    dos.writeInt(N); // Envia tamaño de matriz (N)
+                    dos.flush();
 
-                        // Se imprimen las matrices generadas solo si N < 20
-                        if(N < 20){
-                            System.out.println("Matriz \"A\" Generada:");
-                            for(i=0; i<N ;i++){
-                                for(j=0; j<N ; j++){
-                                    System.out.print(A[i][j] + " ");           
-                                } 
-                                System.out.println();
-                            } // for imprimir matriz A
-                        
-                            System.out.println("Matriz \"B\" Generada:");
-                            for(i=0; i<N ;i++){
-                                for(j=0; j<N ; j++){
-                                    System.out.print(B[i][j] + " ");           
-                                } 
-                                System.out.println();
-                            } // for imprimir matriz B
-                        } // if impirmir matrices
-                        
-                        // Se transpone la matriz B
-                        for(i=0; i<N ;i++)
-                            for(j=0; j<N ; j++){
-                                float x = B[i][j];
-                                B[i][j] = B[j][i];
-                                B[j][i] = x;
-                            } // for matriz transpuesta
-                        
-                        //Se crean los hilos para conexion con los demas nodos
-                        MultiplicarMatrices hilosConexion[] = new MultiplicarMatrices[3]; // Hilos
-                        
-                        // Se inicializan los hilos
-                        hilosConexion[0] = new MultiplicarMatrices("1.1.1.1",5);
-                        hilosConexion[1] = new MultiplicarMatrices("1.1.1.1",5);
-                        hilosConexion[2] = new MultiplicarMatrices("1.1.1.1",5);
-                        hilosConexion[3] = new MultiplicarMatrices("1.1.1.1",5);
-                        
-                        for(i=0; i<4;i++){ //Se inicia la ejecucion de hilos
-                            hilosConexion[i].start();
-                        } // for
-                        for(i=0; i<4;i++){ //Se crea barrera de hilos
-                            hilosConexion[i].join();
-                        } // for  
-                        
-                        // Se calcula checksum de matriz C. Tambien se imprime matriz en caso de N < 20
-                        checksum = 0;
-                        System.out.println("Resultado obtenido de A*B con N = "+ N +": ");
-                            for(i=0; i<N ;i++){
-                                for(j=0; j<N ; j++){
-                                    checksum = checksum + C[i][j]; // Se calcula el checksum
-                                    if(N < 20){ // Se imprime matriz C solo si es un numero pequeño
-                                        System.out.print(C[i][j] + " ");
-                                    } // if impirmir matriz C
-                                } // for 
-                                System.out.println();
-                            } // for imprimir / calcular checksum
-                        System.out.println("Checksum = "+ checksum);
-                        break;
-                        
-                    case 5: // Se envian las partes de la matriz A y B para cada nodo remoto 
-                        // ADAPTAR LINEAS PARA CONEXION ENTRE NODOS 
-                        InetAddress ip = InetAddress.getByName(ipAddress); // Se convierte string a formato ip 
-                        Socket cl = new Socket(ip, 4000); // Se crea conexion con un Servidor A
-                        DataInputStream dis = new DataInputStream(cl.getInputStream() ); // Flujo entrada nodo 0
-                        DataOutputStream dos = new DataOutputStream(cl.getOutputStream()); // Flujo salida nodo 0
-   
-                        int nodoID = dis.readInt(); // Recibe numero de nodo que tiene el servidor remoto 
-                        
-                        // Se establecen rangos para dividir Matriz B en 4 partes iguales y se almacenan en paquetes
-                        
-                        
-                        ByteBuffer paqueteB1 = ByteBuffer.allocate( (N*(N/4)) * 4 );// FALTA DEFINIR RANGO
-                        ByteBuffer paqueteB2 = ByteBuffer.allocate((N*(N/4)) * 4);// FALTA DEFINIR RANGO
-                        ByteBuffer paqueteB3 = ByteBuffer.allocate((N*(N/4)) * 4);// FALTA DEFINIR RANGO
-                        ByteBuffer paqueteB4 = ByteBuffer.allocate((N*(N/4)) * 4);// FALTA DEFINIR RANGO
-                        ByteBuffer paqueteA1 = ByteBuffer.allocate((N*(N/4)) * 4);// FALTA DEFINIR RANGO
-                        
-                        for(i=0;i<N/4;i++){ // Se ingresan numeros de B1 en paquete
-                            for(j=0;j<N;j++){
-                                paqueteB1.putFloat(B[i][j]);
-                            }
-                        }
-                        
-                        for(i=((N/4)+1);i<(2*(N/4));i++){ // Se ingresan numeros de B2 en paquete
-                            for(j=0;j<N;j++){
-                                paqueteB2.putFloat(B[i][j]);
-                            }
-                        }
-                        
-                        for(i=((2*(N/4))+1);i<(3*(N/4));i++){ // Se ingresan numeros de B3 en paquete 
-                            for(j=0;j<N;j++){
-                                paqueteB3.putFloat(B[i][j]);
-                            }
-                        }
-                        
-                        for(i=((3*(N/4))+1);i<N;i++){ // Se ingresan numeros de B4 en paquete
-                            for(j=0;j<N;j++){
-                                paqueteB4.putFloat(B[i][j]);
-                            }
-                        }
-                            
-                        byte[] ArrayB1 = paqueteB1.array();
-                        byte[] ArrayB2 = paqueteB2.array();
-                        byte[] ArrayB3 = paqueteB3.array();
-                        byte[] ArrayB4 = paqueteB4.array();
-                        
-                        // Se envian partes de matriz B 
-                        dos.write(ArrayB1); // se envia paquete de bytes con B1
-                        dos.write(ArrayB2); // se envia paquete de bytes con B2
-                        dos.write(ArrayB3); // se envia paquete de bytes con B3
-                        dos.write(ArrayB4); // se envia paquete de bytes con B4
-                        
-                        // SE ESTABLECE RANGOS CON SWITCH SEGUN N/4 y NODO RECIBIDO DESDE REMOTO
-                            // AQUI SE UTILIZA BYTE BUFFER
-                        switch(nodoID){
-                            case 1:
-                                for(i=0;i<N/4;i++){ // Se ingresan numeros de A en paquete
-                                    for(j=0;j<N;j++){
-                                        paqueteA1.putFloat(A[i][j]);
-                                    }
-                                }
-                                break;
-                                
-                            case 2 :
-                                for(i=((N/4)+1);i<(2*(N/4));i++){ // Se ingresan numeros de A en paquete
-                                    for(j=0;j<N;j++){
-                                        paqueteA1.putFloat(A[i][j]);
-                                    }
-                                }
-                                break;
-                                
-                            case 3:
-                                for(i=((2*(N/4))+1);i<(3*(N/4));i++){ // Se ingresan numeros de A en paquete 
-                                    for(j=0;j<N;j++){
-                                        paqueteA1.putFloat(A[i][j]);
-                                    }
-                                }
-                                break;
-                                
-                            default:
-                                for(i=((3*(N/4))+1);i<N;i++){ // Se ingresan numeros de A en paquete
-                                    for(j=0;j<N;j++){
-                                        paqueteA1.putFloat(A[i][j]);
-                                    }
-                                }        
-                        } // switch
-                        
-                        byte[] ArrayA = paqueteA1.array();
-                        dos.write(ArrayA); // se envia paquete de bytes con B1
-                        dos.flush();
-                                
-                        // SE RECIBE PAQUETE DE MATRIZ C RESULTANTE Y EN SYNCHRONIZED SE GUARDA EN C[][] SEGUN NUMERO DE NODO REMODO
-                        
-                        synchronized(obj){ // Se guardan resultados de matriz C segun el nodo al que se tiene conexion
-                 
-                        } // synchronized */
+                    // Se crean matrices para guardar secciones de Matriz A y C
+                    Matriz auxA = new Matriz( N/2,N,"A_Parcial");
+                    Matriz auxC = new Matriz( N/4,N,"C_Parcial");
+                    auxA.copiarMitad(A,nodoID);
+                    auxC.initMatriz();
+                    
+                    // Se envian matrices a nodos remotos
+                    enviarMatriz(dis, dos, B); // Envia matriz B
+                    enviarMatriz(dis, dos, auxA); // Envia matriz parcial A
 
-                        cl.close(); // Se cierra conexion con Servidor A  
+                    // Se reciben las partes resultantes de matriz C desde nodo remoto
+                    auxC = recibirMatriz(dis, dos, auxC);
+
+                    synchronized(obj){ // Se guardan resultados parciales de matriz C en Nodo Local 
+                        C.copiarMitad(auxC, nodoID);
                         
-                        // PARTE DE SOCKETS Y FLUJOS
-                        break;
-                        
-                    default: // Nodos 1-4 que operan con las matrices
-                        ServerSocket serverRemoto = new ServerSocket(4000); // Socket para servidor
-                        
-                        System.out.print("Puerto: " + serverRemoto.getLocalPort() + " / IP: " + serverRemoto.getInetAddress() );
-                        
-                        Socket clienteRemoto = serverRemoto.accept();
-                        DataInputStream disR = new DataInputStream(clienteRemoto.getInputStream() ); // Flujo entrada nodo 1-4
-                        DataOutputStream dosR = new DataOutputStream(clienteRemoto.getOutputStream()); // Flujo salida nodo 1-4
-                                
-                        // SE ENVIA NUMERO DE NODO ASIGNADO PARA LA MAQUINA REMOTA EN CUESTION
-                        
-                        // SE RECIBE LA PARTE A CON PAQUETE DE BYTES
-                        
-                        // SE RECIBEN PAQUETES DE MATRIZ B
-                        
-                        // SE HACE MULTIPLICACION PARA OBTENER PARTES DE MATRIZ C
-                        
-                        // SE ENVIA PAQUETE DE BYTES CON MATRIZ C RESULTANTE
-                        
-                        
-                        
-                        
-                        System.out.println("-- Conexion con Cliente Finalizada --");
-                        System.out.println("\nEsperando conexion de otro cliente... ");
-                } // switch              
+                        FileOutputStream fout = new FileOutputStream(new File("./matriz.txt"));
+                        ObjectOutputStream oos = new ObjectOutputStream(fout); 
+                        oos.writeObject(C); // Se almacena objeto serializado en fichero
+                        oos.flush();
+                    } // synchronized */
+                    
+                    dis.close();
+                    dos.close();
+                    cl.close(); // Se cierra conexion con Servidor A  
+                   
+                }else{ // Nodos 1 y 2 que operan con las matrices
+                    ServerSocket serverRemoto = new ServerSocket(4000); // Socket para servidor
+                    System.out.println("Puerto: " + serverRemoto.getLocalPort() + " / IP: " + serverRemoto.getInetAddress() );
+                    System.out.println("\nEsperando conexion de un cliente... ");
+
+                    Socket cl = serverRemoto.accept(); // Se crea conexion con un Servidor A
+                    DataInputStream disR = new DataInputStream(cl.getInputStream()); // Flujo de entrada desde cliente
+                    DataOutputStream dosR = new DataOutputStream(cl.getOutputStream()); // Flujo salida
+                    
+                    dosR.writeInt(numNodo); // Recibe numero de nodo que tiene el servidor remoto 
+                    dosR.flush();
+                    N = disR.readInt(); // Recibe tamaño de matriz (N)
+
+                    // Se crean matrices para guardar secciones de Matriz A y C 
+                    Matriz auxA = new Matriz( N/4,N,"A_Parcial");
+                    Matriz auxC = new Matriz( N/4,N,"C_Parcial");
+                    auxA.initMatriz();
+                    auxC.initMatriz();
+                    
+                    // Se reciben matrices de nodo local
+                    B = recibirMatriz(disR, dosR, B);
+                    auxA = recibirMatriz(disR, dosR, auxA);
+                    
+                    // Se realiza multiplicacion A_Parcial * B
+                    auxC.multiplicarMatriz(auxA, B);
+                    
+                    // Se envian las partes resultantes de matriz C hacia nodo local
+                    enviarMatriz(disR, dosR, auxC);
+
+                    System.out.println("-- Conexion con Cliente Finalizada --");
+                    System.out.println("\nEsperando conexion de otro cliente... ");
+                }           
             }catch(IOException ex){
+                Logger.getLogger(MultMatrices.class.getName()).log(Level.SEVERE, null, ex);
+            } catch (Exception ex) {
                 Logger.getLogger(MultMatrices.class.getName()).log(Level.SEVERE, null, ex);
             } // catch
         } // run
     } // clase MultiplicarMatrices
     
+    
+    // Envia matrices
+    public static void enviarMatriz(DataInputStream dis, DataOutputStream dos, Matriz y) throws Exception{
+        // Se serializa matriz en un fichero
+        FileOutputStream fout = new FileOutputStream(new File("./matriz.txt"));
+        ObjectOutputStream oos = new ObjectOutputStream(fout); 
+        oos.writeObject(y); // Se almacena objeto serializado en fichero
+        oos.flush();
+        int paquete = (int) new File("./matriz.txt").length(); // Obtiene el tamaño del archivo a enviar
+        
+        // Se envia archivo con objeto serializado
+        dis = new DataInputStream(new FileInputStream(new File("./matriz.txt")));
+        dos.writeUTF("matriz.txt"); // Envia el nombre del archivo al servidor
+        dos.flush();
+        dos.writeInt(paquete); // Envia el tamaño del archivo al servidor
+        dos.flush();
+
+        // Se inicia envio de archivos en paquetes
+        byte[] b = new byte[1024]; // Tamaño del paquete
+        long enviados = 0;
+        int n = 0;
+        while(enviados<paquete){ // Bucle para enviar paquetes
+            n = dis.read(b);
+            dos.write(b,0,n);
+            dos.flush();
+            enviados = enviados + n;
+        } // Termina while
+        dos.flush();
+    } // enviarMatriz
+    
+    
+    // Recibe matrices
+    public static Matriz recibirMatriz(DataInputStream dis, DataOutputStream dos, Matriz y) throws Exception{
+        String nameArch = dis.readUTF(); // Recibe el nombre del archivo entrante
+        int paquete = dis.readInt(); // Se recibe el tamaño del archivo entrante
+        dos = new DataOutputStream(new FileOutputStream(new File("./"+nameArch))); // Flujo de salida
+
+        // Procedimiento para realizar la descarga del archivo
+        byte[] b = new byte[1024]; // Tamaño de los paquetes a recibir
+        int n = 0;
+
+        for(long j = 0; j < paquete/1024;j++){ // Bucle para la descarga de paquetes
+            n = dis.read(b);
+            dos.write(b,0,n);
+            dos.flush();
+        } // Termina for
+
+        if(paquete%1024!=0){ // Verifica si ha llegado el ultimo paquete desde cliente
+            b = new byte [(int)paquete%1024];
+            n = dis.read(b);
+            dos.write(b,0,n);
+            dos.flush();
+        } // if
+        dos.flush();
+        
+        // Recupera el objeto original previamente serializado
+        FileInputStream fin = new FileInputStream(new File("./matriz.txt")); 
+        ObjectInputStream ois = new ObjectInputStream(fin);
+        y = (Matriz) ois.readObject();
+        
+        return y;
+    } // recibirMatriz
+    
+    
     // Funcion main
     public static void main(String[] args) throws Exception {
         BufferedReader entrada = new BufferedReader(new InputStreamReader(System.in));
         int numNodo; // Almacena el nodo que representa la maquina 
+        int N = 0; // Tamaño de Matriz Cuadrada
+        int i = 0; // Variables auxiliares
         
         System.out.println("\n\n%% Gonzalez Barrientos Geovanni Daniel - Tarea 3 - Sistemas Distribuidos 4CV13 %%");
         System.out.println("\n*** PROGRAMA INICIADO ***");
         
         do{
-            System.out.println("\n\n Ingrese el numero del nodo que representa esta instancia (0 - 4): ");
+            System.out.println("\n\n Ingrese el numero del nodo que representa esta instancia (0 - 2): ");
             numNodo = Integer.parseInt(entrada.readLine()); // Lee el nodo desde teclado
-        }while(numNodo<0 && numNodo>4);
+        }while(numNodo<0 && numNodo>2);
         
         for(;;){
-            MultiplicarMatrices nodoPrincipal = new MultiplicarMatrices("",numNodo); // Se inicializa hilo principal para nodos
-            nodoPrincipal.start();
-            nodoPrincipal.join();
+            if(numNodo == 0){ // Instrucciones para Nodo 0 (Máquina Local)
+                do{ // Se lee el tamaño de la matriz a trabajar
+                    System.out.println("\n\n Ingrese el tamaño de la matriz cuadrada (Solo numeros divisibles entre 4): ");
+                    N = Integer.parseInt(entrada.readLine()); // Lee el tamaño de la matriz desde teclado
+                }while(N%4 != 0);
+
+                // Se crean las matrices de tamaño "N" y se inicializan
+                Matriz A = new Matriz(N,N,"A");
+                Matriz B = new Matriz(N,N,"B");
+                Matriz C = new Matriz(N,N,"C");
+                A.initMatriz();
+                B.initMatriz();
+                C.initMatriz();
+
+                // Se imprimen las matrices generadas solo si N < 15
+                A.printMatriz();
+                B.printMatriz();
+                C.printMatriz();
+
+                // Se transpone la matriz B
+                B.traspMatriz();
+
+                //Se crean los hilos para conexion con los demas nodos
+                ThreadMatriz hiloClient[] = new ThreadMatriz[1]; // Inicializar Hilos
+                hiloClient[0] = new ThreadMatriz("1.1.1.1",0,A,B,C,N); // Conexión nodo 1
+                hiloClient[1] = new ThreadMatriz("1.1.1.1",0,A,B,C,N); // Conexión nodo 2
+
+                for(i=0; i<2;i++) //Se inicia la ejecución de hilos
+                    hiloClient[i].start();
+
+                for(i=0; i<2;i++) //Se crea barrera de hilos
+                    hiloClient[i].join();
+
+                // Se calcula checksum de matriz C. Tambien se imprime matriz en caso de N < 20
+                C.calcChecksum();
+                
+            }else{ // Nodo 1 y 2
+                ThreadMatriz hiloServer = new ThreadMatriz("",numNodo,null,null,null,0); // Se inicializa hilo principal para nodos
+                hiloServer.start();
+                hiloServer.join();
+            } // else
         } // for
     } // main
 }
