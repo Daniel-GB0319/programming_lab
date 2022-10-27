@@ -59,10 +59,11 @@ public class MultMatrices {
         
         public void calcChecksum(){ // Calcula el checksum
             checksum = 0;
-            for(i=0; i<M ;i++)
-                for(j=0; j<N ; j++)
+            for(i=0; i<N ;i++)
+                for(j=0; j<N ; j++){
                     checksum = checksum + matriz[i][j]; 
-
+                }
+            
             System.out.println("\n!! CHECKSUM CALCULADO = "+ checksum+" !!");
         } // calcChecksum
         
@@ -80,7 +81,7 @@ public class MultMatrices {
                         case 1: // Matriz A1 y A2
                             matriz[i][j] = aux.matriz[i][j]; break;
                         default: // Matriz A3 y A4
-                            matriz[i][j] = aux.matriz[((M/2)+1) + i][j];
+                            matriz[i][j] = aux.matriz[(N/2) + i][j];
                     } // switch
         } // copiarMitad
     }// Clase Matriz
@@ -133,14 +134,20 @@ public class MultMatrices {
                     auxA.copiarMitad(A,nodoID);
                     auxC.initMatriz();
                     
-                    synchronized(obj){// Se envian matrices a nodos remotos
+                    synchronized(obj){// Se envian matriz b nodos remotos
                         enviarMatriz(dis, dos, B); // Envia matriz B
+                    }
+                    Thread.sleep(5000); // Pausa de 1s
+                    synchronized(obj){// Se envia mitad de matriz a 
                         enviarMatriz(dis, dos, auxA); // Envia matriz parcial A
-
-                        // Se recibe las parte de resultado en matriz C desde nodo remoto
+                    }
+                    Thread.sleep(5000); // Pausa de 1s
+                    synchronized(obj){// Se recibe las parte de resultado en matriz C desde nodo remoto   
+                        
                         auxC = recibirMatriz(dis, dos, auxC);
-
-                        // Se guarda resultado parcial de matriz C en Nodo Local 
+                    }
+                    Thread.sleep(5000); // Pausa de 1s
+                    synchronized(obj){// Se guarda resultado parcial de matriz C en Nodo Local 
                         for(int i=0; i<(N/2) ;i++)
                             for(int j=0; j<N ;j++)
                                 if(nodoID == 1){
@@ -154,8 +161,6 @@ public class MultMatrices {
                         oos.writeObject(C); // Se almacena objeto serializado en fichero
                         oos.flush();
                     } // synchronized */
-                    dis.close();
-                    dos.close();
                     cl.close(); // Se cierra conexion con Servidor A  
                    
                 }else{ // Nodos 1 y 2 que operan con las matrices
@@ -185,17 +190,12 @@ public class MultMatrices {
                     // Se realiza multiplicacion A_Parcial * B
                     auxC.multiplicarMatriz(auxA, B);
                     
-                    auxA.printMatriz();
-                    B.printMatriz();
-                    auxC.printMatriz();
-                    
                     // Se envian las partes resultantes de matriz C hacia nodo local
                     enviarMatriz(disR, dosR, auxC);
 
-                    clR.close();
+                    Thread.sleep(5000); // Pausa de 5s
                     serverRemoto.close();
                     System.out.println("-- Conexion con Cliente Finalizada --");
-                    System.out.println("\nEsperando conexion de otro cliente... ");
                 }           
             }catch(IOException ex){
                 Logger.getLogger(MultMatrices.class.getName()).log(Level.SEVERE, null, ex);
@@ -224,7 +224,7 @@ public class MultMatrices {
         dos.flush();
 
         // Se inicia envio de archivos en paquetes
-        byte[] b = new byte[1024]; // Tamaño del paquete
+        byte[] b = new byte[2048]; // Tamaño del paquete
         long enviados = 0;
         int n = 0;
         while(enviados<paquete){ // Bucle para enviar paquetes
@@ -245,17 +245,17 @@ public class MultMatrices {
         dos = new DataOutputStream(new FileOutputStream(new File("./"+nameArch))); // Flujo de salida
 
         // Procedimiento para realizar la descarga del archivo
-        byte[] b = new byte[1024]; // Tamaño de los paquetes a recibir
+        byte[] b = new byte[2048]; // Tamaño de los paquetes a recibir
         int n = 0;
 
-        for(long j = 0; j < paquete/1024;j++){ // Bucle para la descarga de paquetes
+        for(long j = 0; j < paquete/2048;j++){ // Bucle para la descarga de paquetes
             n = dis.read(b);
             dos.write(b,0,n);
             dos.flush();
         } // Termina for
 
         if(paquete%1024!=0){ // Verifica si ha llegado el ultimo paquete desde cliente
-            b = new byte [(int)paquete%1024];
+            b = new byte [(int)paquete%2048];
             n = dis.read(b);
             dos.write(b,0,n);
             dos.flush();
@@ -287,7 +287,7 @@ public class MultMatrices {
             numNodo = Integer.parseInt(entrada.readLine()); // Lee el nodo desde teclado
         }while(numNodo<0 && numNodo>2);
         
-        for(;;){
+        //for(;;){
             if(numNodo == 0){ // Instrucciones para Nodo 0 (Máquina Local)
                 do{ // Se lee el tamaño de la matriz a trabajar
                     System.out.print("\n\n Ingrese el tamaño de la matriz cuadrada (Solo numeros divisibles entre 4): ");
@@ -332,6 +332,6 @@ public class MultMatrices {
                 hiloServer.start();
                 hiloServer.join();
             } // else
-        } // for
+        //} // for
     } // main
 }
