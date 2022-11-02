@@ -1,6 +1,7 @@
 package chatMulticast;
 import java.io.*;
 import java.net.*;
+import java.nio.charset.StandardCharsets;
 
 public class Chat {
     static class Worker extends Thread{ // Clase para hilos
@@ -8,13 +9,13 @@ public class Chat {
             try{ 
                 MulticastSocket socket = new MulticastSocket(10000); // Socket para multicast
                 InetSocketAddress grupo = new InetSocketAddress(InetAddress.getByName("239.10.10.10"),10000); // IP multicast
-                NetworkInterface netInter = NetworkInterface.getByName("em1");
+                NetworkInterface netInter = NetworkInterface.getByName("em1"); 
                 byte[] mensaje; // Mensaje recibido
                 
                 socket.joinGroup(grupo,netInter); // Uniendose a grupo multicast
-                for(;;){
-                    mensaje = recibe_mensaje_multicast(socket,10);
-                    System.out.print(new String(mensaje,"UTF-8"));
+                while(true){ // Bucle para recibir mensajes
+                    mensaje = recibe_mensaje_multicast(socket,40*8); // Recibe un mensaje
+                    System.out.print("\n" +new String(mensaje,StandardCharsets.UTF_8)+ "\nMensaje : ");
                 } // for
                 
 //                socket.leaveGroup(grupo, netInter);
@@ -43,18 +44,21 @@ public class Chat {
     // Funcion main
     public static void main(String[] args) throws IOException {
         System.setProperty("java.net.preferIPv4Stack", "true"); // Se utilizan sockets IPv4
-        BufferedReader entrada = new BufferedReader(new InputStreamReader(System.in));
+        BufferedReader entrada = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8));
         String nombre = args[0]; // Nombre de usuario pasado como parametro
         String mensaje; // Mensaje ingresado desde teclado
         new Worker().start(); // Hilo cliente multicast
         
         System.out.println("\n\n%% Gonzalez Barrientos Geovanni Daniel - Tarea 4 - Sistemas Distribuidos 4CV13 %%");
         System.out.println("\n*** PROGRAMA INICIADO *** (Usuario: "+nombre+")\n\n");
+        mensaje = "!!! Usuario "+nombre+ " conectado !!!";
+        envia_mensaje_multicast(mensaje.getBytes(StandardCharsets.UTF_8),"239.10.10.10",10000);
+        System.out.print("Mensaje: ");
         
-        for(;;){
-            System.out.print("Mensaje: ");
-            mensaje = nombre + " :- " + entrada.readLine();
-            envia_mensaje_multicast(mensaje.getBytes(),"239.10.10.10",10000);
+        while(true){
+            mensaje = nombre+ " :- " +entrada.readLine(); // Lee mensaje desde teclado
+            System.out.println("TEST LOCAL : "+mensaje);
+            envia_mensaje_multicast(mensaje.getBytes(StandardCharsets.UTF_8),"239.10.10.10",10000); // Envia mensaje
         }// for
     } // main
 }
