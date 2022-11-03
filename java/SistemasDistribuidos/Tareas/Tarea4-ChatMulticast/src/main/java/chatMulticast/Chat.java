@@ -1,7 +1,8 @@
 package chatMulticast;
 import java.io.*;
 import java.net.*;
-import java.nio.charset.StandardCharsets;
+import java.nio.charset.Charset; // Se utiliza CP850 para mostrar correctamente caracteres en CMD y Powershell
+import java.util.Scanner;
 
 public class Chat {
     static class Worker extends Thread{ // Clase para hilos
@@ -15,7 +16,7 @@ public class Chat {
                 socket.joinGroup(grupo,netInter); // Uniendose a grupo multicast
                 while(true){ // Bucle para recibir mensajes
                     mensaje = recibe_mensaje_multicast(socket,40*8); // Recibe un mensaje
-                    System.out.print("\n" +new String(mensaje,StandardCharsets.UTF_8)+ "\nMensaje : ");
+                    System.out.print("\n" +new String(mensaje,Charset.forName("CP850"))+ "\nMensaje : ");
                 } // for
                 
 //                socket.leaveGroup(grupo, netInter);
@@ -44,7 +45,7 @@ public class Chat {
     // Funcion main
     public static void main(String[] args) throws IOException {
         System.setProperty("java.net.preferIPv4Stack", "true"); // Se utilizan sockets IPv4
-        BufferedReader entrada = new BufferedReader(new InputStreamReader(System.in, StandardCharsets.UTF_8));
+        Scanner sc = new Scanner(System.in,Charset.forName("CP850"));
         String nombre = args[0]; // Nombre de usuario pasado como parametro
         String mensaje; // Mensaje ingresado desde teclado
         new Worker().start(); // Hilo cliente multicast
@@ -52,13 +53,12 @@ public class Chat {
         System.out.println("\n\n%% Gonzalez Barrientos Geovanni Daniel - Tarea 4 - Sistemas Distribuidos 4CV13 %%");
         System.out.println("\n*** PROGRAMA INICIADO *** (Usuario: "+nombre+")\n\n");
         mensaje = "!!! Usuario "+nombre+ " conectado !!!";
-        envia_mensaje_multicast(mensaje.getBytes(StandardCharsets.UTF_8),"239.10.10.10",10000);
+        envia_mensaje_multicast(mensaje.getBytes(Charset.forName("CP850")),"239.10.10.10",10000);
         System.out.print("Mensaje: ");
         
         while(true){
-            mensaje = nombre+ " :- " +entrada.readLine(); // Lee mensaje desde teclado
-            System.out.println("TEST LOCAL : "+mensaje);
-            envia_mensaje_multicast(mensaje.getBytes(StandardCharsets.UTF_8),"239.10.10.10",10000); // Envia mensaje
+            mensaje = nombre+ " :- " +sc.nextLine(); // Lee mensaje desde teclado
+            envia_mensaje_multicast(mensaje.getBytes(Charset.forName("CP850")),"239.10.10.10",10000); // Envia mensaje
         }// for
     } // main
 }
