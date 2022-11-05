@@ -1,40 +1,60 @@
 #include <stdio.h>
 #include <stdlib.h>
-// UTILIZAR PUNTEROS PARA EL ARREGLO PERMUTACION
-
-void generarPermutacion(int *permutacion){
-    printf("Cadena para permutacion generada: ");
-    // generar bits del 1 al 8 y almacenarlos en el unsigned char
-        for(int i = 0; i < 8; i++){
-            *permutacion[i] = rand()%9 +1;
-        // FALTA ASEGURAR QUE NUMEROS DEL 1 AL 8 NO SE REPITAN EN EL ARREGLO
-
-        printf("%i", *permutacion[i]);
-        } // for
-} // generar permutacion 
-
-unsigned char permutar(unsigned char bloque, int *permutacion[8]){
-    unsigned char aux;
+#include <time.h>
+#include <locale.h>
 
 
+// Genera una cadena de permutacion 
+void generarCadena(int *buffer){
+    int numAux = 0, verificacion = 0, i=0;
 
-    return bloque;
-} // permutacion
+    do{ // Ingresa numeros del 1-8 aleatoriamente
+        numAux = rand()% 9 + 1;
+
+        for(int j=0; j<8; j++){
+            if(numAux == buffer[j]){
+                verificacion = 1; // Numero ya existe
+            }
+        } // for verificar numero existente
+
+        if(verificacion != 1){
+            buffer[i] = numAux;
+            i++;
+        }// FOR
+         verificacion = 0;
+    }while(i == 8); // for generar la cadena
+} // generarCadena
+
+
+// Permuta los bits del caractér ingresado
+unsigned char permutar(unsigned char arregloBits, int cadenaPermutacion[]){
+    unsigned char auxiliar = 0, salida = 0;
+
+    for(int i = 0; i<8; i++){
+        auxiliar = arregloBits & (1 << (8 - cadenaPermutacion[i]));
+        salida |= cadenaPermutacion[i] > i ? auxiliar << (cadenaPermutacion[i] - i - 1) : auxiliar >> (i-cadenaPermutacion[i]+1);
+    } // for
+    return salida;
+} // permutar
 
 int main(){
-    srand(time(NULL));
-    unsigned char bloque, resultado;
-    int *permutacion[8];
- 
-    printf("Ingresa un caracter: ");
-    scanf("%c",*bloque);
+    setlocale(LC_ALL,"");
+    srand(time(NULL)); // Semilla para números pseudoaleatorios
+    unsigned char arregloBits;
+    int resultado;
+    int cadenaPermutacion[8];
 
-    printf("Representacion de %c en bits: 0x%X", bloque, bloque);
+    printf("**** Lab 3: Permutations and Triple DES - Cryptography - 4/Noviembre/2022 ****");
+    printf("-- Gonzalez Barrientos Geovanni Daniel / 3CM11 --\n\n");
 
-    generarPermutacion();
+    printf("Ingrese un caractér: ");
+    arregloBits = getchar();
 
-    resultado = permutar(bloque, *permutacion);
-    printf("Resultado de la permutacion en bits: 0x%X", resultado);
-    
+    printf("Valor ingresado: %c =",arregloBits);
+    printf(" %i\n",arregloBits);
+    generarCadena(cadenaPermutacion);
+
+    resultado = permutar(arregloBits, cadenaPermutacion);
+    printf("El resultado de la permutacion es %i\n\n", resultado);
     return 0;
-} // main
+}
