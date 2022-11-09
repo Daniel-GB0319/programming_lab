@@ -1,0 +1,13 @@
+Flask
+Flask-HTTPAuth
+Flask-SQLAlchemy
+Jinja2
+MarkupSafe
+Pygments
+SQLAlchemy
+Werkzeug
+httpie
+itsdangerous
+python-dateutil
+requests
+paramiko

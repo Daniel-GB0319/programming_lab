@@ -1,0 +1,20 @@
+terminal length 0
+R4#configure terminal
+Enter configuration commands, one per line.  End with CNTL/Z.
+R4(config)#ip route 10.0.5.0 255.255.255.0 10.0.2.253
+R4(config)#router rip
+R4(config-router)#no auto-summary
+R4(config-router)#version 2
+R4(config-router)#network 10.0.0.0
+R4(config-router)#router ospf 1
+R4(config-router)#network 10.0.4.0 0.0.0.255 area 0
+R4(config-router)#exit
+R4(config)#router rip
+R4(config-router)#redistribute rip
+redistribution of "rip" via "rip" not allowed
+R4(config-router)#redistribute ospf 1 metric 12
+R4(config-router)#router ospf 1
+R4(config-router)#redistribute static metric 200 subnets
+R4(config-router)#redistribute rip metric 200 subnets
+R4(config-router)#exit
+R4(config)#
