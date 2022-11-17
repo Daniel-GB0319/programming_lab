@@ -5,7 +5,7 @@ import java.sql.*;
 
 public class JDBCexample {
     // JDBC driver name and database URL
-    static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
+    static final String JDBC_DRIVER = "com.mysql.cj.jdbc.Driver";
     static final String DB_URL = "jdbc:mysql://localhost/empresa";
     
     // Database credentials
@@ -19,7 +19,7 @@ public class JDBCexample {
         try{
             // STEP 2: Register JDBC driver
             //Class.forName("com.mysql.jdbc.Driver");
-            Class.forName("com.mysql.cj.jdbc.Driver");
+            Class.forName(JDBC_DRIVER);
             
             // STEP 3: Open a connection
             System.out.println("Connectiong to database...");

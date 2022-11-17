@@ -5,12 +5,12 @@ import java.sql.*;
 public class PrimerEjemplo {
 
     // Nombre del controlador JDBC y URL de la base de datos
-    static final String JDBC_DRIVER = "com.mysql.jdbc.Driver";
+    static final String JDBC_DRIVER = "com.mysql.cj.jdbc.Driver";
     static final String DB_URL = "jdbc:mysql://localhost/empresa";
     
     // Credenciales de la base de datos
     static final String USER = "root";
-    static final String PASS = "root";
+    static final String PASS = "GdGb10$2000@";
     
     public static void main(String[] args) {
         Connection conn = null;
@@ -19,7 +19,7 @@ public class PrimerEjemplo {
         try{
             // Paso 2: rEGISTRAR CONTROLADOR jdbc
             //Class.forName("com.mysql.jdbc.Driver"); // Deprecated
-            Class.forName("com.mysql.cj.jdbc.Driver");
+            Class.forName(JDBC_DRIVER);
             
             // Paso 3: Abrir una conexion
             System.out.println("Connecting to database...");
