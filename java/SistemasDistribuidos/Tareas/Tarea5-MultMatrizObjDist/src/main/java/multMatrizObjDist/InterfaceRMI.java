@@ -1,4 +1,4 @@
-package multMatrizObjDist;
+//package multMatrizObjDist;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
