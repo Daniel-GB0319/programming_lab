@@ -1,11 +1,11 @@
-//package multMatrizObjDist;
+package objDist;
 
 import java.io.*;
 import java.net.*;
 import java.rmi.*;
 
 public class ClienteRMI{
-    static double[][] C; // Matriz C
+    public static double[][] C; // Matriz C
     
     static class HiloCliente extends Thread{
         String url; // url objeto remoto
@@ -54,34 +54,34 @@ public class ClienteRMI{
                 // Se juntan las partes de C resultantes 
                 synchronized(obj){
                     if("nodo1".equals(Thread.currentThread().getName())){ // nodo1
-                        acomoda_matriz(C, C1, (2*N)/6, 0, N, M);
-                        acomoda_matriz(C, C2, (2*N)/6, M/6, N, M);
-                        acomoda_matriz(C, C3, (2*N)/6, (2*M)/6, N, M);
-                        acomoda_matriz(C, C4, (2*N)/6, (3*M)/6, N, M);
-                        acomoda_matriz(C, C5, (2*N)/6, (4*M)/6, N, M);
-                        acomoda_matriz(C, C6, (2*N)/6, (5*M)/6, N, M);
+                        acomoda_matriz(C1,(int) (2*N)/6, 0, N, M);
+                        acomoda_matriz(C2,(int) (2*N)/6,(int) M/6, N, M);
+                        acomoda_matriz(C3,(int) (2*N)/6,(int) (2*M)/6, N, M);
+                        acomoda_matriz(C4,(int) (2*N)/6,(int) (3*M)/6, N, M);
+                        acomoda_matriz(C5,(int) (2*N)/6,(int) (4*M)/6, N, M);
+                        acomoda_matriz(C6,(int) (2*N)/6,(int) (5*M)/6, N, M);
                         
-                        acomoda_matriz(C, C7, (3*N)/6, 0, N, M);
-                        acomoda_matriz(C, C8, (3*N)/6, M/6, N, M);
-                        acomoda_matriz(C, C9, (3*N)/6, (2*M)/6, N, M);
-                        acomoda_matriz(C, C10, (3*N)/6, (3*M)/6, N, M);
-                        acomoda_matriz(C, C11, (3*N)/6, (4*M)/6, N, M);
-                        acomoda_matriz(C, C12, (3*N)/6, (5*M)/6, N, M);
+                        acomoda_matriz(C7,(int) (3*N)/6, 0, N, M);
+                        acomoda_matriz(C8,(int) (3*N)/6,(int) M/6, N, M);
+                        acomoda_matriz(C9,(int) (3*N)/6,(int) (2*M)/6, N, M);
+                        acomoda_matriz(C10,(int) (3*N)/6,(int) (3*M)/6, N, M);
+                        acomoda_matriz(C11,(int) (3*N)/6,(int) (4*M)/6, N, M);
+                        acomoda_matriz(C12,(int) (3*N)/6,(int) (5*M)/6, N, M);
                     
                     }else{ // nodo2
-                        acomoda_matriz(C, C1, (4*N)/6, 0, N, M);
-                        acomoda_matriz(C, C2, (4*N)/6, M/6, N, M);
-                        acomoda_matriz(C, C3, (4*N)/6, (2*M)/6, N, M);
-                        acomoda_matriz(C, C4, (4*N)/6, (3*M)/6, N, M);
-                        acomoda_matriz(C, C5, (4*N)/6, (4*M)/6, N, M);
-                        acomoda_matriz(C, C6, (4*N)/6, (5*M)/6, N, M);
+                        acomoda_matriz(C1,(int) (4*N)/6, 0, N, M);
+                        acomoda_matriz(C2,(int) (4*N)/6,(int) M/6, N, M);
+                        acomoda_matriz(C3,(int) (4*N)/6,(int) (2*M)/6, N, M);
+                        acomoda_matriz(C4,(int) (4*N)/6,(int) (3*M)/6, N, M);
+                        acomoda_matriz(C5,(int) (4*N)/6,(int) (4*M)/6, N, M);
+                        acomoda_matriz(C6,(int) (4*N)/6,(int) (5*M)/6, N, M);
                         
-                        acomoda_matriz(C, C7, (5*N)/6, 0, N, M);
-                        acomoda_matriz(C, C8, (5*N)/6, M/6, N, M);
-                        acomoda_matriz(C, C9, (5*N)/6, (2*M)/6, N, M);
-                        acomoda_matriz(C, C10, (5*N)/6, (3*M)/6, N, M);
-                        acomoda_matriz(C, C11, (5*N)/6, (4*M)/6, N, M);
-                        acomoda_matriz(C, C12, (5*N)/6, (5*M)/6, N, M);
+                        acomoda_matriz(C7,(int) (5*N)/6, 0, N, M);
+                        acomoda_matriz(C8,(int) (5*N)/6,(int) M/6, N, M);
+                        acomoda_matriz(C9,(int) (5*N)/6,(int) (2*M)/6, N, M);
+                        acomoda_matriz(C10,(int) (5*N)/6,(int) (3*M)/6, N, M);
+                        acomoda_matriz(C11,(int) (5*N)/6,(int) (4*M)/6, N, M);
+                        acomoda_matriz(C12,(int) (5*N)/6,(int) (5*M)/6, N, M);
                     } // else
                 } // synchronized
             }catch(MalformedURLException | NotBoundException | RemoteException e){
@@ -92,27 +92,28 @@ public class ClienteRMI{
     
     // Separa las matrices en 6 partes
     public static double[][] separa_matriz(double[][] A, int inicio, int N, int M){
-        double[][] sub = new double[N/6][M];
-        for(int i=0; i<(N/6);i++)
-            for(int j=0; j<M;j++)
+        double[][] sub = new double[(int) N/6][M];
+        for(int i=0; i< (int)(N/6);i++)
+            for(int j=0; j< M;j++)
                 sub[i][j] = A[i + inicio][j];
         return sub;
     } // separa_matriz
     
     
     // Agrupa las matrices parciales de C en una completa
-    public static void acomoda_matriz(double[][] C, double[][] A, int renglon, int columna, int N, int M){
-        for(int i=0; i<(N/6);i++)
-            for(int j=0; j<(M/6); j++)
-                C[i+renglon][j+renglon] = A[i][j];
+    public static void acomoda_matriz(double[][] A, int renglon, int columna, int N, int M){
+        for(int i=0; i< (int)(N/6); i++)
+            for(int j=0; j< (int)(N/6); j++)
+                ClienteRMI.C[i+renglon][j+columna+1] = A[i][j];
     }// acomoda_matriz
     
     
     // Imprime la matriz
-    public static void imprime_matriz(double[][] A, int N, int M){
+    public static void imprime_matriz(double[][] A, int N, int M, String name){
+        System.out.println("\n\nMatriz " + name +"\n");
         for (int i=0; i<N; i++){
             for(int j=0; j<M; j++)
-                System.out.print(A[i][j]);
+                System.out.print(A[i][j]+ "  ");
         System.out.println();
         }
     } // imprime_matriz
@@ -125,9 +126,12 @@ public class ClienteRMI{
         double[][] A,B,BT;
         double checksum;
         
+        System.out.println("\n\n%% Gonzalez Barrientos Geovanni Daniel - Tarea 5 - Sistemas Distribuidos 4CV13 %%");
+        System.out.println("\n*** PROGRAMA INICIADO ***");
+        
         // Se lee tamaño de N y M
             do{
-                System.out.print("Escriba el valor de N (Divisible entre 6): ");
+                System.out.print("\nEscriba el valor de N (Divisible entre 6): ");
                 N = Integer.parseInt(entrada.readLine());
                 
                 System.out.print("Escriba el valor de M: ");
@@ -137,46 +141,45 @@ public class ClienteRMI{
         // Se crean e inicializan las matrices A y B
         A = new double[N][M];
         B = new double[M][N];
-        BT = new double[N][M];
-        C = new double[N][N];
+        ClienteRMI.C = new double[N][N];
         
-        for(int i=0; i<N;N++)
-            for(int j=0; j<M ; j++){
+        for(int i=0; i<N; i++)
+            for(int j=0; j<M; j++){
                 A[i][j]= 3*i + 2*j;
-                BT[i][j] = 0;
-                //C[i][j]=0;
             } //for
         
-        for(int i=0; i<M;i++)
-            for(int j=0; j<N ; j++){
+        for(int i=0; i<M; i++)
+            for(int j=0; j<N; j++){
                 B[i][j] = 2*i - 3*j;
             } // for
         
         // Se imprime la matriz A y B en caso de ser un valor pequeño para M y N
-        if(N<15 && M<15){
-            imprime_matriz(A,N,M);
-            imprime_matriz(B,M,N);
+        if(N<=15 && M<=15){
+            imprime_matriz(A,N,M,"A");
+            imprime_matriz(B,M,N,"B");
         } // if
         
         // Se calcula la traspuesta de B
-        for(int i=0; i<N; i++)
-            for(int j=0; j<M ; j++)
-                BT[i][j] = B[j][i];
+        BT = new double[B[0].length][B.length];
+        for(int i=0; i< B.length; i++)
+            for(int j=0; j< B[0].length ; j++)
+                BT[j][i] = B[i][j];
         
+        imprime_matriz(BT,N,M,"B Traspuesta");
         // Se calculan las partes de A y B
         double[][] A1 = separa_matriz(A,0,N,M);
-        double[][] A2 = separa_matriz(A,N/6,N,M);
-        double[][] A3 = separa_matriz(A,(2*N)/6,N,M);
-        double[][] A4 = separa_matriz(A,(3*N)/6,N,M);
-        double[][] A5 = separa_matriz(A,(4*N)/6,N,M);
-        double[][] A6 = separa_matriz(A,(5*N)/6,N,M);
+        double[][] A2 = separa_matriz(A,(int) N/6,N,M);
+        double[][] A3 = separa_matriz(A,(int) (2*N)/6,N,M);
+        double[][] A4 = separa_matriz(A,(int) (3*N)/6,N,M);
+        double[][] A5 = separa_matriz(A,(int) (4*N)/6,N,M);
+        double[][] A6 = separa_matriz(A,(int) (5*N)/6,N,M);
         
         double[][] B1 = separa_matriz(BT,0,N,M);
-        double[][] B2 = separa_matriz(BT,N/6,N,M);
-        double[][] B3 = separa_matriz(BT,(2*N)/6,N,M);
-        double[][] B4 = separa_matriz(BT,(3*N)/6,N,M);
-        double[][] B5 = separa_matriz(BT,(4*N)/6,N,M);
-        double[][] B6 = separa_matriz(BT,(5*N)/6,N,M);
+        double[][] B2 = separa_matriz(BT,(int) N/6,N,M);
+        double[][] B3 = separa_matriz(BT,(int) (2*N)/6,N,M);
+        double[][] B4 = separa_matriz(BT,(int) (3*N)/6,N,M);
+        double[][] B5 = separa_matriz(BT,(int) (4*N)/6,N,M);
+        double[][] B6 = separa_matriz(BT,(int) (5*N)/6,N,M);
           
         // Se obtiene localmente C1, C2, ... , C12
         ClaseRMI rmi = new ClaseRMI();
@@ -196,42 +199,41 @@ public class ClienteRMI{
         double[][] C12 = rmi.multiplica_matrices(A2, B6, N, M);
         
         // Se acomodan las partes de matriz C 
-        acomoda_matriz(C, C1, 0, 0, N, M);
-        acomoda_matriz(C, C2, 0, M/6, N, M);
-        acomoda_matriz(C, C3, 0, (2*M)/6, N, M);
-        acomoda_matriz(C, C4, 0, (3*M)/6, N, M);
-        acomoda_matriz(C, C5, 0, (4*M)/6, N, M);
-        acomoda_matriz(C, C6, 0, (5*M)/6, N, M);
+        acomoda_matriz(C1, 0, 0, N, M);
+        acomoda_matriz(C2, 0,(int) M/6, N, M);
+        acomoda_matriz(C3, 0,(int) (2*M)/6, N, M);
+        acomoda_matriz(C4, 0,(int) (3*M)/6, N, M);
+        acomoda_matriz(C5, 0,(int) (4*M)/6, N, M);
+        acomoda_matriz(C6, 0,(int) (5*M)/6, N, M);
 
-        acomoda_matriz(C, C7, N/6, 0, N, M);
-        acomoda_matriz(C, C8, N/6, M/6, N, M);
-        acomoda_matriz(C, C9, N/6, (2*M)/6, N, M);
-        acomoda_matriz(C, C10, N/6, (3*M)/6, N, M);
-        acomoda_matriz(C, C11, N/6, (4*M)/6, N, M);
-        acomoda_matriz(C, C12, N/6, (5*M)/6, N, M);
+        acomoda_matriz(C7,(int) N/6, 0, N, M);
+        acomoda_matriz(C8,(int) N/6,(int) M/6, N, M);
+        acomoda_matriz(C9,(int) N/6,(int) (2*M)/6, N, M);
+        acomoda_matriz(C10,(int) N/6,(int) (3*M)/6, N, M);
+        acomoda_matriz(C11,(int) N/6,(int) (4*M)/6, N, M);
+        acomoda_matriz(C12,(int) N/6,(int) (5*M)/6, N, M);
         
         // Se crean hilos para conexion a nodos utilizando ip privada de cada VM
-        //HiloCliente h1 = new HiloCliente("rmi://20.163.119.191/multMatriz","nodo1",N,M,A3,A4,B1,B2,B3,B4,B5,B6);
-        //HiloCliente h2 = new HiloCliente("rmi://20.125.118.195/multMatriz","nodo2",N,M,A5,A6,B1,B2,B3,B4,B5,B6);
-        HiloCliente h1 = new HiloCliente("rmi://localhost/multMatriz","nodo1",N,M,A3,A4,B1,B2,B3,B4,B5,B6);
-        HiloCliente h2 = new HiloCliente("rmi://localhost/multMatriz","nodo2",N,M,A5,A6,B1,B2,B3,B4,B5,B6);
-        
+        HiloCliente h1 = new HiloCliente("rmi://10.0.0.5/multMatriz","nodo1",N,M,A3,A4,B1,B2,B3,B4,B5,B6);
+        HiloCliente h2 = new HiloCliente("rmi://10.0.0.6/multMatriz","nodo2",N,M,A5,A6,B1,B2,B3,B4,B5,B6);
+      
         h1.start();
         h2.start();
         h1.join();
         h2.join();
         
         // Se imprime la matriz C en caso de ser un valor pequeño para M y N
-        if(N<15 && M<15){
-            imprime_matriz(C,N,N);
+        if(N<=15 && M<=15){
+            imprime_matriz(ClienteRMI.C,ClienteRMI.C.length,ClienteRMI.C[0].length,"C");
         } // if
         
+        System.out.println("\n!! Matriz C calculada !! ");
         // Se calcula checksum
         checksum = 0;
-        for(int i=0; i<N; i++)
-            for(int j=0; j<N; j++)
-                checksum = checksum + C[i][j];
+        for(int i=0; i<ClienteRMI.C.length; i++)
+            for(int j=0; j<ClienteRMI.C[0].length; j++)
+                checksum = checksum + ClienteRMI.C[i][j];
         
-        System.out.println("Checksum calculado = "+checksum);
+        System.out.println("\nChecksum calculado = "+checksum);
     } // main
 } // Cliente
