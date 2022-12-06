@@ -5,46 +5,45 @@
 #  Grupo: 3CM14
 #  ***** Lab6 - Finite Fields *****
 #  Descripción: Este programa realiza la multiplicación de GF(2^5)
-#  CON EL POLINOMIO IRREDUCIBLE X^5 + X^2 + 1.
+#  con el polinomio irreducible X^5 + X^2 + 1.
 #  *********************************************
 #
-
-import numpy as np  # Permite realizar operaciones con arrays
-import galois  # Permite trabajar con GF(P^M)
 
 
 # Realiza la multiplicación GF * polinomio irreducible
 def galois_multiplication():
-    # Se crea el arreglo GF
-    galois_array = galois.GF(2 ** 5)
-    print(galois_array.properties)
-
     # Se indica el polinomio a utilizar
-    poly = galois.Poly([1, 0, 0, 1, 0, 1], field=galois_array)
-    print(poly)
+    poly = format(5, "b")
+    print(f"\n\n Polinomio irreducible: {poly} ")
+    print("\nRealizando multiplicaciones, por favor espere...\n")
 
     # Se realiza la multiplicación
-    result_mult = galois_array * poly
-    print(f"El resultado de la multiplicación es: {result_mult}")
+    for i in range(32):
+        if i >= 16:
+            num = format(i, "b")
+            shift_num = format((i << 1) & 31, "b")
+            result = format((int(shift_num) ^ int(poly))&31, "b")
+        else:
+            num = format(i, "b")
+            shift_num = format((i << 1) & 31, "b")
+            result = shift_num
+        print(f'#{i} ({num}) - Resultado de \'{shift_num}\' * \'{poly}\' = {result}')
 
-    print("Imprimiendo lista de elementos GF(2^5), por favor espere... ")
-    inverse_list(galois_array)
+    print("\n\nImprimiendo lista de elementos GF(2^5) y sus inversos, por favor espere... ")
+    inverse_list()
 
 
 # Muestra la lista de elementos GF junto con inversos multiplicativos
-def inverse_list(galois_array):
-    # Convirtiendo a binario GF
-    for i in galois_array:
-        print(f"#{i} = {galois_array[i]}")
-        print(f"Inverse = {np.reciprocal(galois_array[i])}\n")
+def inverse_list():
+    for i in range(32):
+        numero = format(i, "b")
+        inverso = format(int(1 / i) % 5, "b")
+        print(f"Elemento #{i} = {numero}")
+        print(f"Inverso = {inverso}\n")
 
-
-# !! Aún falta realizar pruebas de funcionamiento y representación en binario
 
 # Función principal
 if __name__ == '__main__':
-    print("**** Lab6 - Finite Fields - Cryptography - 01/Dec/2022 ****")
+    print("**** Lab6 - Finite Fields - Cryptography - 05/Dec/2022 ****")
     print("-- Gonzalez Barrientos Geovanni Daniel / 3CM11 --\n")
-
-    print("Realizando multiplicación, por favor espere... ")
     galois_multiplication()
