@@ -10,27 +10,26 @@
 #
 
 import base64
-
-from Crypto import Random
-from Crypto.Cipher import DES3
 import sys
+
+from Crypto.Cipher import DES3
 
 
 # Lee contenido de un fichero
 def read_file(name):
-    file = open(name, "r")
-    mensaje = file.read()
+    file = open(name, "rb")
+    file_msg = file.read()
     file.close()
-    return mensaje
+    return file_msg
 
 
 # Escribe contenido en un fichero
 def write_file(name, content):
-    name = "encrypted-%s" % name
+    name = "enc-%s" % name
     file = open(name, "w")
-    file.write(f"{content}")
+    file.write(content)
     file.close()
-    print(f"!!! Archivo cifrado en {name} con éxito !!!\n")
+    print(f"!!! Archivo {name} generado con éxito !!!\n")
 
 
 # Decodifica una cadena de base64
@@ -46,9 +45,12 @@ def encode_base64(decodificado):
 
 
 # Se encarga de cifrar contenido con DES3
-def encrypt_file(mensaje, llave):
-    cipher = DES3.new(llave, DES3.MODE_CFB)
-    ciphertext = cipher.iv + cipher.encrypt(mensaje)
+def encrypt_file(plaintext, des_key):
+    cipher = DES3.new(des_key, DES3.MODE_CFB)
+    ciphertext = cipher.encrypt(plaintext)
+    iv = encode_base64(cipher.iv)
+    iv = iv.decode("ascii")
+    write_file("iv.txt", iv)
     return ciphertext
 
 
@@ -59,9 +61,7 @@ print("Generando archivo cifrado, por favor espere... \n")
 
 # Lee archivo a cifrar y llave
 mensaje = read_file(sys.argv[1])
-mensaje = mensaje.encode("ascii")
 llaveB64 = read_file(sys.argv[2])
-llaveB64 = llaveB64.encode("ascii")
 
 # Se decodifica la llave generada en base64 a bytes
 llave = decode_base64(llaveB64)

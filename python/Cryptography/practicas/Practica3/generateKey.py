@@ -16,11 +16,11 @@ from Crypto.Random import get_random_bytes
 
 
 # Escribe contenido en un fichero
-def write_file(name, content):
-    file = open(name, "w")
+def write_file(file_name, content):
+    file = open(file_name, "w")
     file.write(str(content))
     file.close()
-    print(f"!!! Llave generada en {name} con éxito !!!\n")
+    print(f"!!! Llave generada en {file_name} con éxito !!!\n")
 
 
 # Codifica una cadena en base64
@@ -33,11 +33,11 @@ def encode_base64(decodificado):
 def generate_key():
     while True:  # Se genera la llave de 112 bits
         try:
-            key = DES3.adjust_key_parity(get_random_bytes(24))
+            des_key = DES3.adjust_key_parity(get_random_bytes(24))
             break
         except ValueError:
             pass
-    return key
+    return des_key
 
 
 # Función principal

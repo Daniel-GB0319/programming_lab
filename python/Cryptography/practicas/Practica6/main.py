@@ -14,7 +14,7 @@
 def galois_multiplication():
     # Se indica el polinomio a utilizar
     poly = format(5, "b")
-    print(f"\n\n Polinomio irreducible: {poly} ")
+    print(f"\nPolinomio irreducible: {poly} ")
     print("\nRealizando multiplicaciones, por favor espere...\n")
 
     # Se realiza la multiplicación
@@ -22,7 +22,7 @@ def galois_multiplication():
         if i >= 16:
             num = format(i, "b")
             shift_num = format((i << 1) & 31, "b")
-            result = format((int(shift_num) ^ int(poly))&31, "b")
+            result = format((int(shift_num) ^ int(poly)) & 31, "b")
         else:
             num = format(i, "b")
             shift_num = format((i << 1) & 31, "b")
@@ -35,11 +35,26 @@ def galois_multiplication():
 
 # Muestra la lista de elementos GF junto con inversos multiplicativos
 def inverse_list():
-    for i in range(32):
+    for i in range(1, 32):
         numero = format(i, "b")
-        inverso = format(int(1 / i) % 5, "b")
-        print(f"Elemento #{i} = {numero}")
-        print(f"Inverso = {inverso}\n")
+        gdc, x, y = gcd_ext_euclides(i, 5)
+        if x < 0:
+            x = 5 - ((-1 * x) % 5)
+        inverso = format(x, "b")
+        print(f"Elemento #{i} = {numero} | Inverso = {inverso}")
+
+
+# Algoritmo extendido de Euclides recursivo
+def gcd_ext_euclides(a, b):
+    # Caso base
+    if a == 0:
+        return b, 0, 1
+
+    # Se actualiza X y Y en cada llamada recursiva
+    gcd, x1, y1 = gcd_ext_euclides(b % a, a)
+    x = y1 - (b // a) * x1
+    y = x1
+    return gcd, x, y
 
 
 # Función principal

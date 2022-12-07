@@ -18,7 +18,7 @@ import sys
 
 # Lee contenido de un fichero
 def read_file(name):
-    file = open(name, "r")
+    file = open(name, "rb")
     mensaje_fichero = file.read()
     file.close()
     return mensaje_fichero
@@ -26,9 +26,9 @@ def read_file(name):
 
 # Escribe contenido en un fichero
 def write_file(name, content):
-    name = "encrypted-%s" % name
+    name = "enc-%s" % name
     file = open(name, "w")
-    file.write(f"{content}")
+    file.write(content)
     file.close()
     print(f"!!! Archivo '{name}' generado con éxito !!!\n")
 
@@ -65,9 +65,7 @@ print("Generando archivo cifrado, por favor espere... \n")
 
 # Lee archivo a cifrar y llave
 mensaje = read_file(sys.argv[1])
-mensaje = mensaje.encode("ascii")
 llaveB64 = read_file(sys.argv[2])
-llaveB64 = llaveB64.encode("ascii")
 
 # Se decodifica la llave generada en base64 a bytes
 llave = decode_base64(llaveB64)
