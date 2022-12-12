@@ -1,0 +1,238 @@
+﻿<!DOCTYPE html>
+<html>
+	<head>
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0" charset="utf-8">
+		<meta name="author" content="Carlos Pineda Guerrero, noviembre 2022">
+ 		<script src='/WSClient.js'></script>
+		<script>
+			var URL = "/Servicio/rest/ws";
+
+			var foto = null;  // por default la foto es nula
+			function get(id){
+				return document.getElementById(id);
+			}
+			
+			function muestra(id){
+				get(id).style.display = "block";
+			}
+
+			function oculta(id){
+				get(id).style.display = "none";
+			}
+			
+			function muestra_pantalla(id){
+				oculta("menu");
+				muestra(id);
+			}
+			
+			function oculta_pantalla(id){
+				oculta(id);
+				muestra("menu");
+			}
+			
+			function readSingleFile(files,imagen){
+				var file = files[0];
+				if (!file) return;
+				var reader = new FileReader();
+				reader.onload = function(e){
+					imagen.src = reader.result;
+					// reader.result incluye al principio: "data:image/jpeg;base64,"
+					foto = reader.result.split(',')[1];
+				};
+				reader.readAsDataURL(file);
+			}
+
+			function limpia_alta(){
+				get("alta_nombre").value = "";
+				get("alta_descripcion").value = "";
+				get("alta_precio").value = "";
+				get("alta_cantidad").value = "";
+				get("alta_imagen").src = "/usuario_sin_foto.png";
+				foto = null;
+			}
+			
+			function alta(){
+				var cliente = new WSClient(URL);
+				var articulo ={
+					nombre: get("alta_nombre").value,
+					descripcion: get("alta_descripcion").value,
+					precio: get("alta_precio").value,
+					cantidad: get("alta_cantidad").value,
+					foto: foto
+				};
+				
+				cliente.postJson("alta_articulo",{
+					articulo: articulo
+				},
+				function(code,result){
+					if (code == 200)
+						alert("OK");
+					else
+						alert(JSON.stringify(result));
+				});
+			}
+			
+			function limpia_consulta(){
+				get("consulta_nombre").value = "";
+				get("consulta_descripcion").value = "";
+				get("consulta_precio").value = "";
+				get("consulta_cantidad").value = "";
+				get("consulta_imagen").src = "/usuario_sin_foto.png";
+			}
+			
+			function cierra_pantalla_consulta(){
+				oculta_pantalla('consulta_usuario');
+				muestra("encabezado_consulta");
+				muestra("boton_consulta");
+				oculta("encabezado_modifica");
+				oculta("modifica_carrito");
+				get("consulta_nombre").readOnly = false;
+				get("consulta_descripcion").readOnly = false;
+			}
+			
+			function quita_foto(){
+				foto=null;
+				get('consulta_imagen').src='usuario_sin_foto.png';
+				get('consulta_file').value='';
+			}
+			
+			function consulta(){
+				var cliente = new WSClient(URL);
+				cliente.postJson("consulta_articulo",{
+					// se debe pasar como parametros el nombre y descripcion del articulo a consultar
+					// si el articulo no existe regresa un error
+					nombre: get("consulta_nombre").value,
+					descripcion: get("consulta_descripcion").value
+				},
+				function(code,result){
+					if (code == 200){
+						limpia_consulta();
+						get("consulta_nombre").value = result.nombre;
+						get("consulta_descripcion").value = result.descripcion;
+						get("consulta_precio").value = result.precio;
+						get("consulta_cantidad").value = result.cantidad;
+						foto = result.foto;
+                                                get("consulta_imagen").src = foto != null ? "data:image/jpeg;base64," + foto : "/usuario_sin_foto.png"
+
+						oculta("encabezado_consulta");
+						muestra("encabezado_modifica");
+						muestra("modifica_carrito");
+						oculta("boton_consulta");
+						get("consulta_nombre").readOnly = false;
+						get("consulta_descripcion").readOnly = false;
+					}
+					else
+						// el objeto "result" es de tipo Error
+						alert(JSON.stringify(result));
+				});
+			}
+
+			function modifica(){
+				var cliente = new WSClient(URL);
+				var articulo ={
+					nombre: get("consulta_nombre").value,
+					descripcion: get("consulta_descripcion").value,
+					precio: get("consulta_precio").value,
+					cantidad: get("consulta_cantidad").value,
+					foto: foto
+				};
+				cliente.postJson("modifica_carrito",{
+					articulo: articulo
+				},
+				function(code,result){
+					if (code == 200)
+						alert("OK");
+					else
+						alert(JSON.stringify(result));
+				});
+			}
+			
+			function limpia_borra(){
+				get("borra_email").value = "";
+			}
+			
+			function borra(){
+				var client = new WSClient(URL);
+				client.postJson("borra_usuario",{
+					email: get("borra_email").value
+				},
+				
+				function(code,result){
+					if (code == 200)
+						alert("OK");
+					else
+						alert(JSON.stringify(result));
+				});
+			}
+		</script>
+	</head>
+	<body>
+	<div style="width:250px;margin:auto">
+		<div id="alta_articulo" style="display:none">
+			<h2 style="text-align:center">Captura de Artículo</h2>
+			Nombre del artículo *<br>
+			<input type="text" id="alta_nombre" value="" style="width:250px"/><br>
+			Descripción *<br>
+			<input type="text" id="alta_descripcion" value="" style="width:250px"/><br>
+			Precio Unitario *<br>
+			<input type="number" id="alta_precio" value="" style="width:250px"/><br>
+			Cantidad del producto *<br>
+			<input type="number" id="alta_cantidad" value="" style="width:250px"/><br>
+			<br>
+			<br>
+			<img id="alta_imagen" width="100px" src="/usuario_sin_foto.png"></img><br>
+			<input type="file" onchange="readSingleFile(files,get('alta_imagen'))" multiple="false" accept="image/*"/><br>
+			<br>
+			<button type="button" onclick="alta()" style="width:250px;height:40px">Agregar Artículo</button></br>
+			<button type="button" onclick="limpia_alta()" style="width:250px;height:40px">Limpiar pantalla</button></br>
+			<button type="button" onclick="oculta_pantalla('alta_articulo')" style="width:250px;height:40px">Regresar al menú principal</button></br>
+		</div>
+
+		<div id="consulta_articulo" style="display:none">
+			<div id="encabezado_consulta">
+				<h2 style="text-align:center">Compra de artículos</h2>
+			</div>
+			<div id="encabezado_modifica" style="display:none">
+				<h2 style="text-align:center">Compra de Artículos</h2>
+			</div>
+			Nombre *<br>
+			<input type="text" id="consulta_nombre" value="" style="width:250px"/><br>
+			Descripción *<br>
+			<input type="text" id="consulta_descripcion" value="" style="width:250px"/><br>
+			<div id="modifica_carrito" style="display:none">
+				Precio<br>
+				<input type="number" id="consulta_precio" value="" style="width:250px"/><br>
+				Cantidad disponible *<br>
+				<input type="number" id="consulta_cantidad" value="" style="width:250px"/><br>
+				<br>
+				<br>
+				<img id="consulta_imagen" width="100px" src="/usuario_sin_foto.png"></img>
+				<input type="file" id="consulta_file" onchange="readSingleFile(files,get('consulta_imagen'))" multiple="false" accept="image/*"/><br>
+				Cantidad a comprar: *<br>
+				<input type="number" id="compra_cantidad" value="" style="width:250px"/><br>
+				<br>
+				<button type="button" onclick="modifica()" style="width:250px;height:40px">Compra</button></br>
+		</div>
+			<div id="boton_consulta">
+				<br>
+				<button type="button" onclick="consulta()" style="width:250px;height:40px">Buscar artículo(s)</button></br>
+			</div>
+			<button type="button" onclick="cierra_pantalla_consulta()" style="width:250px;height:40px">Regresar al menú principal</button></br>
+		</div>
+
+		<div id="borra_usuario" style="display:none">
+			<h2 style="text-align:center">Borra usuario</h2>
+			Email *<br>
+			<input type="email" id="borra_email" value="" style="width:250px"/><br><br>
+			<button type="button" onclick="borra()" style="width:250px;height:40px">Borrar usuario</button></br>
+			<button type="button" onclick="oculta_pantalla('borra_usuario')" style="width:250px;height:40px">Regresar</button></br>
+		</div>
+
+		<div id="menu">
+			<button type="button" onclick="limpia_alta();muestra_pantalla('alta_articulo')" style="width:250px;height:40px">Alta usuario</button></br>
+			<button type="button" onclick="limpia_consulta();muestra_pantalla('consulta_usuario')" style="width:250px;height:40px">Consulta usuario</button></br>
+			<button type="button" onclick="limpia_borra();muestra_pantalla('borra_usuario')" style="width:250px;height:40px">Borra usuario</button></br>
+		</div>
+	</div>
+	</body>
+</html>
