@@ -30,6 +30,16 @@
 				muestra("menu");
 			}
 			
+			function muestra_descripcion(){
+				oculta('modifica_carrito')
+				muestra('ver_descripcion')
+			}
+
+			function oculta_descripcion(){
+				oculta('ver_descripcion')
+				muestra('modifica_carrito')
+			}
+
 			function readSingleFile(files,imagen){
 				var file = files[0];
 				if (!file) return;
@@ -81,7 +91,7 @@
 			}
 			
 			function cierra_pantalla_consulta(){
-				oculta_pantalla('consulta_usuario');
+				oculta_pantalla('consulta_articulo');
 				muestra("encabezado_consulta");
 				muestra("boton_consulta");
 				oculta("encabezado_modifica");
@@ -99,10 +109,7 @@
 			function consulta(){
 				var cliente = new WSClient(URL);
 				cliente.postJson("consulta_articulo",{
-					// se debe pasar como parametros el nombre y descripcion del articulo a consultar
-					// si el articulo no existe regresa un error
-					nombre: get("consulta_nombre").value,
-					descripcion: get("consulta_descripcion").value
+					buscador: get("consulta_buscador").value
 				},
 				function(code,result){
 					if (code == 200){
@@ -112,14 +119,13 @@
 						get("consulta_precio").value = result.precio;
 						get("consulta_cantidad").value = result.cantidad;
 						foto = result.foto;
-                                                get("consulta_imagen").src = foto != null ? "data:image/jpeg;base64," + foto : "/usuario_sin_foto.png"
+						get("consulta_imagen").src = foto != null ? "data:image/jpeg;base64," + foto : "/usuario_sin_foto.png"
+						get('consulta_id').value = result.id;
 
 						oculta("encabezado_consulta");
 						muestra("encabezado_modifica");
 						muestra("modifica_carrito");
 						oculta("boton_consulta");
-						get("consulta_nombre").readOnly = false;
-						get("consulta_descripcion").readOnly = false;
 					}
 					else
 						// el objeto "result" es de tipo Error
@@ -136,8 +142,12 @@
 					cantidad: get("consulta_cantidad").value,
 					foto: foto
 				};
+				var cantidad = get('compra_cantidad')
+				var id = get('consulta_id');
 				cliente.postJson("modifica_carrito",{
-					articulo: articulo
+					articulo: articulo,
+					cantidad: cantidad,
+					id: id
 				},
 				function(code,result){
 					if (code == 200)
@@ -184,7 +194,7 @@
 			<input type="file" onchange="readSingleFile(files,get('alta_imagen'))" multiple="false" accept="image/*"/><br>
 			<br>
 			<button type="button" onclick="alta()" style="width:250px;height:40px">Agregar Artículo</button></br>
-			<button type="button" onclick="limpia_alta()" style="width:250px;height:40px">Limpiar pantalla</button></br>
+			<button type="button" onclick="limpia_alta()" style="width:250px;height:40px">Limpiar todos los campos</button></br>
 			<button type="button" onclick="oculta_pantalla('alta_articulo')" style="width:250px;height:40px">Regresar al menú principal</button></br>
 		</div>
 
@@ -195,22 +205,32 @@
 			<div id="encabezado_modifica" style="display:none">
 				<h2 style="text-align:center">Compra de Artículos</h2>
 			</div>
-			Nombre *<br>
-			<input type="text" id="consulta_nombre" value="" style="width:250px"/><br>
-			Descripción *<br>
-			<input type="text" id="consulta_descripcion" value="" style="width:250px"/><br>
+			Buscador *<br>
+			<input type="text" id="consulta_buscador" value="" style="width:250px"/><br>
 			<div id="modifica_carrito" style="display:none">
+				Nombre *<br>
+				<input type="text" id="consulta_nombre" value="" style="width:250px"/><br>
 				Precio<br>
 				<input type="number" id="consulta_precio" value="" style="width:250px"/><br>
 				Cantidad disponible *<br>
 				<input type="number" id="consulta_cantidad" value="" style="width:250px"/><br>
+
+				<div id="ver_descripcion" style="display:none">
+					Descripción *<br>
+					<input type="text" id="consulta_descripcion" value="" style="width:250px"/><br>
+					ID del Producto *<br>
+					<input type="text" id="consulta_id" value="" style="width:250px"/><br>
+					<button type="button" onclick="ocultar_descripcion()" style="width:250px;height:40px">Cerrar</button></br>
+				</div>
+
 				<br>
 				<br>
 				<img id="consulta_imagen" width="100px" src="/usuario_sin_foto.png"></img>
 				<input type="file" id="consulta_file" onchange="readSingleFile(files,get('consulta_imagen'))" multiple="false" accept="image/*"/><br>
 				Cantidad a comprar: *<br>
-				<input type="number" id="compra_cantidad" value="" style="width:250px"/><br>
+				<input type="number" id="compra_cantidad" value="1" style="width:250px"/><br>
 				<br>
+				<button type="button" onclick="mostrar_descripcion()" style="width:250px;height:40px">Ver descripción del artículo</button></br>
 				<button type="button" onclick="modifica()" style="width:250px;height:40px">Compra</button></br>
 		</div>
 			<div id="boton_consulta">
@@ -220,18 +240,10 @@
 			<button type="button" onclick="cierra_pantalla_consulta()" style="width:250px;height:40px">Regresar al menú principal</button></br>
 		</div>
 
-		<div id="borra_usuario" style="display:none">
-			<h2 style="text-align:center">Borra usuario</h2>
-			Email *<br>
-			<input type="email" id="borra_email" value="" style="width:250px"/><br><br>
-			<button type="button" onclick="borra()" style="width:250px;height:40px">Borrar usuario</button></br>
-			<button type="button" onclick="oculta_pantalla('borra_usuario')" style="width:250px;height:40px">Regresar</button></br>
-		</div>
-
 		<div id="menu">
-			<button type="button" onclick="limpia_alta();muestra_pantalla('alta_articulo')" style="width:250px;height:40px">Alta usuario</button></br>
-			<button type="button" onclick="limpia_consulta();muestra_pantalla('consulta_usuario')" style="width:250px;height:40px">Consulta usuario</button></br>
-			<button type="button" onclick="limpia_borra();muestra_pantalla('borra_usuario')" style="width:250px;height:40px">Borra usuario</button></br>
+			<h1 align="center">Prototipo de Sistema de Comercio</h1>
+			<button type="button" onclick="limpia_alta();muestra_pantalla('alta_articulo')" style="width:250px;height:40px">Captura de artículo</button></br>
+			<button type="button" onclick="limpia_consulta();muestra_pantalla('consulta_articulo')" style="width:250px;height:40px">Compra de artículos</button></br>
 		</div>
 	</div>
 	</body>

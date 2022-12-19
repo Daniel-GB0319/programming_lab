@@ -2,8 +2,6 @@ package servicio_json;
 
 import com.google.gson.*;
 
-public class ParamModArticulo{
-  Articulo articulo;
-  int cantidad:
+public class ParamDelArticulo{
   int id_articulo;
 }
