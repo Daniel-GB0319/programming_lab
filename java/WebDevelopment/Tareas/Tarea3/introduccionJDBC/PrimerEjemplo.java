@@ -9,7 +9,7 @@ public class PrimerEjemplo {
     
     // Credenciales de la base de datos
     static final String USER = "root";
-    static final String PASS = "GdGb10$2000@";
+    static final String PASS = "GdGb10$2000&";
     
     public static void main(String[] args) {
         Connection conn = null;
@@ -65,11 +65,13 @@ public class PrimerEjemplo {
             } // Nada que podamos hacer
             
             try{
-                if(conn != null)
+                if(conn != null){
                     conn.close();
+                } // if
             }catch(SQLException se){
                 se.printStackTrace();
             } // catch
         } // finally
+        System.out.println("Goodbye!");
     } // main
 } // Class PrimerEjemplo

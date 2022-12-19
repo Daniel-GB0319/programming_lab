@@ -1,5 +1,3 @@
-package introduccionJDBC;
-
 // STEP 1: Import required packages
 import java.sql.*;
 
@@ -10,7 +8,7 @@ public class JDBCexample {
     
     // Database credentials
     static final String USER = "root";
-    static final String PASS = "root";
+    static final String PASS = "GdGb10$2000&";
     
     public static void main(String[] args){
         Connection conn = null;
