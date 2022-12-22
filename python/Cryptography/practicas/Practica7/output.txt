@@ -1,0 +1,5 @@
+{"sha_password": "5sg7KCrrLgIoRFlXIcwAu9pHyyRTfBd5+buE8EA54Wdua6hXPliNoQUlEOOqCjKp5Vh5riKwwtYhNvwKPoX4uw==", 
+"sha_text": "krk54Qout02m8mRZ+Pu5UyPATu0EMxwvqw9CJ5ro/APT/JpGcNHQVxmA/zn0gF/icLNNcQ5eETfVJxCvjxt2Rg==", 
+"sha_pdf": "GMkptE976U9RpRdOiHu0Uk85tz8JgtDO99APuBTB6crSH4/bQMR1enBfqHG6nMacA91+ULfzUZgtl0cAve3S1Q==", 
+"sha_audioFile": "YZDb6P9ZXVdQ7arOrUnnNepMu2WfwOvIs+OR5CFxHXoT/BHa4W25Adq+qz6WCsi0rFUZmdaP/dbRV3EouaI+og==", 
+"sha_img": "joV/6RXUgLoOo7s/wOueQJ0s9JQUmQEmCu/ueEFZmzzNbZhs1hoHSYgett3Fu3rwcZ9C10f4leWglVnzNCtU3w=="}
