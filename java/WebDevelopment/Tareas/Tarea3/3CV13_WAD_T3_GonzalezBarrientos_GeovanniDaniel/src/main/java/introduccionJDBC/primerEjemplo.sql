@@ -1,3 +1,4 @@
+create database empresa;
 use empresa;
 create table Employees
 (

@@ -1,3 +1,4 @@
+package introduccionJDBC;
 // Paso1. Importar paquetes requeridos
 import java.sql.*;
 
@@ -5,12 +6,12 @@ public class PrimerEjemplo {
 
     // Nombre del controlador JDBC y URL de la base de datos
     static final String JDBC_DRIVER = "com.mysql.jdbc.Driver"; 
-    static final String DB_URL = "jdbc:mysql://localhost/empresa";
+    static final String DB_URL = "jdbc:mysql://localhost:3306/empresa";
     
     // Credenciales de la base de datos
     static final String USER = "root";
-    static final String PASS = "GdGb10$2000&";
-    
+    static final String PASS = "GdGb10$2000@";
+//    jdbc:mysql://localhost:3306/?user=root
     public static void main(String[] args) {
         Connection conn = null;
         Statement stmt = null;
@@ -29,34 +30,32 @@ public class PrimerEjemplo {
             stmt = conn.createStatement();
             String sql;
             sql = "SELECT id, first, last, age FROM Employees";
-            ResultSet rs = stmt.executeQuery(sql);
-            
             // Paso 5: Extraer datos del conjunto de resultados
-            while(rs.next()){
-                // Recupera por nombre de columna
-                int id = rs.getInt("id");
-                int age = rs.getInt("age");
-                String first = rs.getString("first");
-                String last = rs.getString("last");
-                
-                // Mostrar valores
-                System.out.print("ID: "+id);
-                System.out.print(", Age: "+age);
-                System.out.print(", First: "+first);
-                System.out.println(", Last: "+last);
-            } // while
-            
-            // Paso 6: Limpiar el entorno
-            rs.close();
+            try (ResultSet rs = stmt.executeQuery(sql)) {
+                // Paso 5: Extraer datos del conjunto de resultados
+                while (rs.next()) {
+                    // Recupera por nombre de columna
+                    int id = rs.getInt("id");
+                    int age = rs.getInt("age");
+                    String first = rs.getString("first");
+                    String last = rs.getString("last");
+                    
+                    // Mostrar valores
+                    System.out.print("ID: "+id);
+                    System.out.print(", Age: "+age);
+                    System.out.print(", First: "+first);
+                    System.out.println(", Last: "+last);
+                } // while
+                // Paso 6: Limpiar el entorno
+            }
             stmt.close();
             conn.close();
-        } catch(SQLException se){
+        } catch(SQLException | ClassNotFoundException se){
             // Manejar errores para JDBC
-            se.printStackTrace();
-        }catch(Exception e){
-            // Manejar errores para Class.forName
-            e.printStackTrace();
-        } finally {
+
+        }
+        // Manejar errores para Class.forName
+         finally {
             // Bloque finally utilizado para cerrar recursos
             try{
                 if(stmt != null)
@@ -69,7 +68,6 @@ public class PrimerEjemplo {
                     conn.close();
                 } // if
             }catch(SQLException se){
-                se.printStackTrace();
             } // catch
         } // finally
         System.out.println("Goodbye!");

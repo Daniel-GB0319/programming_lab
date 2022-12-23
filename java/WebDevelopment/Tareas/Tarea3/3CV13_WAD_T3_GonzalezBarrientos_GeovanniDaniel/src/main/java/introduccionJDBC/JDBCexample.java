@@ -1,3 +1,6 @@
+package introduccionJDBC;
+
+
 // STEP 1: Import required packages
 import java.sql.*;
 
@@ -38,33 +41,32 @@ public class JDBCexample {
                     
             // Let us select all the records and dispaly them.
             sql = "SELECT id, first, last, age FROM Employees";
-            ResultSet rs = stmt.executeQuery(sql);
-            
             // STEP 5: Extract data from result set
-            while(rs.next()){
-                // Retrieve by column name
-                int id = rs.getInt("ïd");
-                int age = rs.getInt("age");
-                String first = rs.getString("first");
-                String last = rs.getString("last");
-                
-                // Display values
-                System.out.print("ID : "+ id);
-                System.out.print(", Age : "+ age);
-                System.out.print(", First : "+ first);
-                System.out.print(", Last : "+ last);
-            } // while
-            
-            // STEP 6: Clean up environment
-            rs.close();
+            try (ResultSet rs = stmt.executeQuery(sql)) {
+                // STEP 5: Extract data from result set
+                while (rs.next()) {
+                    // Retrieve by column name
+                    int id = rs.getInt("ïd");
+                    int age = rs.getInt("age");
+                    String first = rs.getString("first");
+                    String last = rs.getString("last");
+                    
+                    // Display values
+                    System.out.print("ID : "+ id);
+                    System.out.print(", Age : "+ age);
+                    System.out.print(", First : "+ first);
+                    System.out.print(", Last : "+ last);
+                } // while
+                // STEP 6: Clean up environment
+            }
             stmt.close();
             conn.close();
         } catch(SQLException se){
             // Handle errors for JDBC
-            se.printStackTrace();
-        } catch(Exception e){
+
+        } catch(ClassNotFoundException e){
             // Hnadle errors for Class.forName
-            e.printStackTrace();
+
         } finally{
             // Finally block used to close resources
             try{
@@ -77,7 +79,6 @@ public class JDBCexample {
                 if(conn != null)
                     conn.close();
             } catch(SQLException se){
-                se.printStackTrace();
             } // catch
         } // finally
         System.out.println("Goodbye!");
