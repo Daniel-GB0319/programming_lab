@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Registrar Nueva Materia</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    </head>
+    <body>
+        <h1 align="center">Registrar Nueva Materia a Profesor</h1>
+        <form action="http://localhost:8080/registro/Registro" method="get">
+            <label for="nombre">Nombre(S):</label>
+            <br>
+            <input type="text" id="nombre" name="nombre">
+            <br><!-- comment -->
+            
+            <label for="ap1">Apellido Paterno:</label>
+            <br>
+            <input type="text" id="ap1" name="ap1">
+            <br> 
+            
+            <label for="ap1">Apellido Materno:</label>
+            <br>
+            <input type="text" id="ap2" name="ap1">
+            <br> 
+            
+            <label for="Materia">Materia:</label>
+            <br>
+            <select size="1" id="Materia" name="materia">
+                <option selected disabled value="0">Selecciona una opcion</option>
+                <option value="1">WAD</option>
+                <option value="2">POO</option>
+                <option value="3">Bases de Datos</option>
+                <option value="4">ADOO</option>
+            </select>
+            <br> 
+            <input type="submit" value="submit">
+            <br> 
+        </form>
+    </body>
+</html>

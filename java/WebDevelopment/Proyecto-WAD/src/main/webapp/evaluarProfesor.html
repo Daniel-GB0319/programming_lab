@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Registrar Alumno</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    </head>
+    <body>
+        <h1 align="center">Registrar Alumno</h1>
+        <form action="http://localhost:8080/registro/Registro" method="get">
+            <label for="nombre">Nombre(S):</label>
+            <br>
+            <input type="text" id="nombre" name="nombre">
+            <br><!-- comment -->
+            
+            <label for="ap1">Apellido:</label>
+            <br>
+            <input type="text" id="ap1" name="ap1">
+            <br> 
+            
+            <label for="boleta">Boleta:</label>
+            <br>
+            <input type="text" id="boleta" name="boleta">
+            <br> 
+            
+            <label for="carrera">Carrera:</label>
+            <br>
+            <select size="1" id="carrera" name="carrera">
+                <option selected disabled value="0">Selecciona una opcion</option>
+                <option value="1">Ingenieria Aeronautica</option>
+                <option value="2">Ingenieria Ambiental</option>
+                <option value="3">Ingenieria Biotecnologica</option>
+                <option value="4">Ingenieria en Sistemas Computacionales</option>
+            </select>
+            <br> 
+            
+            <label for="direccion">Direccion:</label>
+            <br>
+            <<textarea id="direccion" name="direccion" rows="5" cols="40"></textarea>
+            <br><br>
+            <input type="submit" value="submit">
+            <br> 
+        </form>
+    </body>
+</html>

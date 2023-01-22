@@ -9,8 +9,8 @@ public class PrimerEjemplo {
     static final String DB_URL = "jdbc:mysql://localhost:3306/empresa";
     
     // Credenciales de la base de datos
-    static final String USER = "root";
-    static final String PASS = "GdGb10$2000@";
+    static final String USER = "daniel@localhost";
+    static final String PASS = "daniel1234";
 //    jdbc:mysql://localhost:3306/?user=root
     public static void main(String[] args) {
         Connection conn = null;
