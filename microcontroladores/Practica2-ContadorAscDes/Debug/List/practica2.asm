@@ -1,5 +1,5 @@
 
-;CodeVisionAVR C Compiler V3.51 Evaluation
+;CodeVisionAVR C Compiler V3.51 
 ;(C) Copyright 1998-2023 Pavel Haiduc, HP InfoTech S.R.L.
 ;http://www.hpinfotech.ro
 

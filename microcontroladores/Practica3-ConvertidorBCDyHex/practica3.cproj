@@ -4,7 +4,7 @@
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectVersion>7.0</ProjectVersion>
     <ToolchainName>com.HPInfoTech.CodeVisionAVR.C</ToolchainName>
-    <ProjectGuid>{339AF9E6-423D-497C-A76A-A46C3F34E8A0}</ProjectGuid>
+    <ProjectGuid>{B32438DE-423D-497C-A76A-A46C3F34E8A0}</ProjectGuid>
     <avrdevice>ATmega8535</avrdevice>
     <avrdeviceseries>none</avrdeviceseries>
     <OutputType>Executable</OutputType>
