@@ -141,7 +141,7 @@ while (1)
        variableD=PIND&0x0f;
        variableC=PINC&0x0f;
 
-      if(selector = 0){ // Display del 0 - 9
+      if(selector == 0){ // Display del 0 - 9
             // Operaciones para display cátodo común
             if (variableD<10){
             PORTB=tabla7segmentos[variableD];

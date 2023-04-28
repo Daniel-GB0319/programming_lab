@@ -1,15 +1,15 @@
 /*******************************************************
-This program was created by the CodeWizardAVR V3.51
+This program was created by the CodeWizardAVR V3.51 
 Automatic Program Generator
 © Copyright 1998-2023 Pavel Haiduc, HP InfoTech S.R.L.
 http://www.hpinfotech.ro
 
-Project :
-Version :
-Date    : 3/27/2023
-Author  :
-Company :
-Comments:
+Project : 
+Version : 
+Date    : 15/03/2023
+Author  : 
+Company : 
+Comments: 
 
 
 Chip type               : ATmega8535
@@ -22,11 +22,11 @@ Data Stack size         : 128
 
 // I/O Registers definitions
 #include <mega8535.h>
+unsigned char var, var2;
+const char tabla7segmentos [10]={0x3f,0x06,0x5b,0x4f,0x66,0x6d,0x7c,0x07,0x7f,0x6f};
+const char tablahexadecimal[16]={0xc0,0xf9,0xa4,0xb0,0x99,0x92,0x82,0xF8,0x80,0x10,0x88,0x83,0xc6,0xa1,0x86,0x8e};
 
 // Declare your global variables here
-unsigned char variableD,variableC ;
-const char tabla7segmentos [16]={0x3f,0x06,0x5b,0x4f,0x66,0x6d,0x7c,0x07,0x7f,0x6f,0x77,0x1f,0x4e,0x3d,0x4f,0x47};
-# define selector PINC.6
 
 void main(void)
 {
@@ -34,27 +34,27 @@ void main(void)
 
 // Input/Output Ports initialization
 // Port A initialization
-// Function: Bit7=In Bit6=Out Bit5=Out Bit4=Out Bit3=Out Bit2=Out Bit1=Out Bit0=Out
+// Function: Bit7=In Bit6=Out Bit5=Out Bit4=Out Bit3=Out Bit2=Out Bit1=Out Bit0=Out 
 DDRA=(0<<DDA7) | (1<<DDA6) | (1<<DDA5) | (1<<DDA4) | (1<<DDA3) | (1<<DDA2) | (1<<DDA1) | (1<<DDA0);
-// State: Bit7=T Bit6=0 Bit5=0 Bit4=0 Bit3=0 Bit2=0 Bit1=0 Bit0=0
+// State: Bit7=T Bit6=0 Bit5=0 Bit4=0 Bit3=0 Bit2=0 Bit1=0 Bit0=0 
 PORTA=(0<<PORTA7) | (0<<PORTA6) | (0<<PORTA5) | (0<<PORTA4) | (0<<PORTA3) | (0<<PORTA2) | (0<<PORTA1) | (0<<PORTA0);
 
 // Port B initialization
-// Function: Bit7=Out Bit6=Out Bit5=Out Bit4=Out Bit3=Out Bit2=Out Bit1=Out Bit0=Out
-DDRB=(1<<DDB7) | (1<<DDB6) | (1<<DDB5) | (1<<DDB4) | (1<<DDB3) | (1<<DDB2) | (1<<DDB1) | (1<<DDB0);
-// State: Bit7=0 Bit6=0 Bit5=0 Bit4=0 Bit3=0 Bit2=0 Bit1=0 Bit0=0
+// Function: Bit7=In Bit6=Out Bit5=Out Bit4=Out Bit3=Out Bit2=Out Bit1=Out Bit0=Out 
+DDRB=(0<<DDB7) | (1<<DDB6) | (1<<DDB5) | (1<<DDB4) | (1<<DDB3) | (1<<DDB2) | (1<<DDB1) | (1<<DDB0);
+// State: Bit7=T Bit6=0 Bit5=0 Bit4=0 Bit3=0 Bit2=0 Bit1=0 Bit0=0 
 PORTB=(0<<PORTB7) | (0<<PORTB6) | (0<<PORTB5) | (0<<PORTB4) | (0<<PORTB3) | (0<<PORTB2) | (0<<PORTB1) | (0<<PORTB0);
 
 // Port C initialization
-// Function: Bit7=In Bit6=In Bit5=In Bit4=In Bit3=In Bit2=In Bit1=In Bit0=In
+// Function: Bit7=In Bit6=In Bit5=In Bit4=In Bit3=In Bit2=In Bit1=In Bit0=In 
 DDRC=(0<<DDC7) | (0<<DDC6) | (0<<DDC5) | (0<<DDC4) | (0<<DDC3) | (0<<DDC2) | (0<<DDC1) | (0<<DDC0);
-// State: Bit7=T Bit6=P Bit5=T Bit4=T Bit3=P Bit2=P Bit1=P Bit0=P
-PORTC=(0<<PORTC7) | (1<<PORTC6) | (0<<PORTC5) | (0<<PORTC4) | (1<<PORTC3) | (1<<PORTC2) | (1<<PORTC1) | (1<<PORTC0);
+// State: Bit7=T Bit6=T Bit5=T Bit4=T Bit3=P Bit2=P Bit1=P Bit0=P 
+PORTC=(0<<PORTC7) | (0<<PORTC6) | (0<<PORTC5) | (0<<PORTC4) | (1<<PORTC3) | (1<<PORTC2) | (1<<PORTC1) | (1<<PORTC0);
 
 // Port D initialization
-// Function: Bit7=In Bit6=In Bit5=In Bit4=In Bit3=In Bit2=In Bit1=In Bit0=In
+// Function: Bit7=In Bit6=In Bit5=In Bit4=In Bit3=In Bit2=In Bit1=In Bit0=In 
 DDRD=(0<<DDD7) | (0<<DDD6) | (0<<DDD5) | (0<<DDD4) | (0<<DDD3) | (0<<DDD2) | (0<<DDD1) | (0<<DDD0);
-// State: Bit7=T Bit6=T Bit5=T Bit4=T Bit3=P Bit2=P Bit1=P Bit0=P
+// State: Bit7=T Bit6=T Bit5=T Bit4=T Bit3=P Bit2=P Bit1=P Bit0=P 
 PORTD=(0<<PORTD7) | (0<<PORTD6) | (0<<PORTD5) | (0<<PORTD4) | (1<<PORTD3) | (1<<PORTD2) | (1<<PORTD1) | (1<<PORTD0);
 
 // Timer/Counter 0 initialization
@@ -135,44 +135,15 @@ SPCR=(0<<SPIE) | (0<<SPE) | (0<<DORD) | (0<<MSTR) | (0<<CPOL) | (0<<CPHA) | (0<<
 TWCR=(0<<TWEA) | (0<<TWSTA) | (0<<TWSTO) | (0<<TWEN) | (0<<TWIE);
 
 while (1)
-      {
-      // Place your code here
-      //Enmascaramos los 4 bits menos significativos del puerto C Y D ya que los demás no interesan.
-       variableD=PIND&0x0f;
-       variableC=PINC&0x0f;
-
-      if(selector == 0){ // Display del 0 - 9
-            // Operaciones para display cátodo común
-            if (variableD<10){
-            PORTB=tabla7segmentos[variableD];
-            }else{ //Si lo que leemos es mayor o igual de 10 que dibuje en el display una E de ERROR
-                PORTB=0x79;
-            }
-
-            // Operaciones ánodo común
-            if (variableC<10){
-                PORTA=~tabla7segmentos[variableC];
-            }else{ //Si lo que leemos es mayor o igual de 10 que dibuje en el display una E de ERROR
-                PORTA=~(0x79);
-            }
-
-
-      }else{ // Display del 0 - F
-            // Operaciones para display cátodo común
-            if (variableD<16){
-            PORTB=tabla7segmentos[variableD];
-            }else{ //Si lo que leemos es igual a 16 que dibuje en el display una E de ERROR
-                PORTB=0x79;
-            }
-
-            // Operaciones ánodo común
-            if (variableC<16){
-                PORTA=~tabla7segmentos[variableC];
-            }else{ //Si lo que leemos es mayor o igual de 16 que dibuje en el display una E de ERROR
-                PORTA=~(0x79);
-            }
-
-      } // else display 0 - F
-
-      }
+{
+var=PIND&0x0f; //Enmascaramos los 4 bits menos significativos
+var2=PINC&0x0f;
+//del puerto A ya que los demás no interesan.
+if (var<10)
+PORTB=tabla7segmentos[var];
+PORTA=tablahexadecimal[var2];
+if (var>=10) //Si lo que leemos es mayor o igual de 10 que dibuje en el display una E de ERROR
+PORTB=0x79;
+// Place your code here
+};
 }

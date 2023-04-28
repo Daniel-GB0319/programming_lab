@@ -41,11 +41,11 @@
 ;PCODE: $00000011 VOL: 0
 ; 0000 0029 
 ; 0000 002A // Port B initialization
-; 0000 002B // Function: Bit7=Out Bit6=Out Bit5=Out Bit4=Out Bit3=Out Bit2=Out Bit1=Out Bit0=Out
-; 0000 002C DDRB=(1<<DDB7) | (1<<DDB6) | (1<<DDB5) | (1<<DDB4) | (1<<DDB3) | (1<<DDB2) | (1<<DDB1) | (1<<DDB0);
+; 0000 002B // Function: Bit7=In Bit6=Out Bit5=Out Bit4=Out Bit3=Out Bit2=Out Bit1=Out Bit0=Out
+; 0000 002C DDRB=(0<<DDB7) | (1<<DDB6) | (1<<DDB5) | (1<<DDB4) | (1<<DDB3) | (1<<DDB2) | (1<<DDB1) | (1<<DDB0);
 ;PCODE: $00000012 VOL: 0
 ;PCODE: $00000013 VOL: 0
-; 0000 002D // State: Bit7=0 Bit6=0 Bit5=0 Bit4=0 Bit3=0 Bit2=0 Bit1=0 Bit0=0
+; 0000 002D // State: Bit7=T Bit6=0 Bit5=0 Bit4=0 Bit3=0 Bit2=0 Bit1=0 Bit0=0
 ; 0000 002E PORTB=(0<<PORTB7) | (0<<PORTB6) | (0<<PORTB5) | (0<<PORTB4) | (0<<PORTB3) | (0<<PORTB2) | (0<<PORTB1) | (0<<PORTB0);
 ;PCODE: $00000014 VOL: 0
 ;PCODE: $00000015 VOL: 0
@@ -55,8 +55,8 @@
 ; 0000 0032 DDRC=(0<<DDC7) | (0<<DDC6) | (0<<DDC5) | (0<<DDC4) | (0<<DDC3) | (0<<DDC2) | (0<<DDC1) | (0<<DDC0);
 ;PCODE: $00000016 VOL: 0
 ;PCODE: $00000017 VOL: 0
-; 0000 0033 // State: Bit7=T Bit6=P Bit5=T Bit4=T Bit3=P Bit2=P Bit1=P Bit0=P
-; 0000 0034 PORTC=(0<<PORTC7) | (1<<PORTC6) | (0<<PORTC5) | (0<<PORTC4) | (1<<PORTC3) | (1<<PORTC2) | (1<<PORTC1) | (1<<PORTC0);
+; 0000 0033 // State: Bit7=T Bit6=T Bit5=T Bit4=T Bit3=P Bit2=P Bit1=P Bit0=P
+; 0000 0034 PORTC=(0<<PORTC7) | (0<<PORTC6) | (0<<PORTC5) | (0<<PORTC4) | (1<<PORTC3) | (1<<PORTC2) | (1<<PORTC1) | (1<<PORTC0);
 ;PCODE: $00000018 VOL: 0
 ;PCODE: $00000019 VOL: 0
 ; 0000 0035 
@@ -202,114 +202,45 @@
 ; 0000 0089 while (1)
 ;PCODE: $00000052 VOL: 0
 ; 0000 008A {
-; 0000 008B // Place your code here
-; 0000 008C //Enmascaramos los 4 bits menos significativos del puerto C Y D ya que los demás no interesan.
-; 0000 008D variableD=PIND&0x0f;
+; 0000 008B var=PIND&0x0f; //Enmascaramos los 4 bits menos significativos
 ;PCODE: $00000053 VOL: 0
 ;PCODE: $00000054 VOL: 0
 ;PCODE: $00000055 VOL: 0
-; 0000 008E variableC=PINC&0x0f;
+; 0000 008C var2=PINC&0x0f;
 ;PCODE: $00000056 VOL: 0
 ;PCODE: $00000057 VOL: 0
 ;PCODE: $00000058 VOL: 0
-; 0000 008F 
-; 0000 0090 if(selector == 0){ // Display del 0 - 9
+; 0000 008D //del puerto A ya que los demás no interesan.
+; 0000 008E if (var<10)
 ;PCODE: $00000059 VOL: 0
 ;PCODE: $0000005A VOL: 0
 ;PCODE: $0000005B VOL: 0
-; 0000 0091 // Operaciones para display cátodo común
-; 0000 0092 if (variableD<10){
+; 0000 008F PORTB=tabla7segmentos[var];
 ;PCODE: $0000005C VOL: 0
 ;PCODE: $0000005D VOL: 0
 ;PCODE: $0000005E VOL: 0
-; 0000 0093 PORTB=tabla7segmentos[variableD];
 ;PCODE: $0000005F VOL: 0
 ;PCODE: $00000060 VOL: 0
+; 0000 0090 PORTA=tablahexadecimal[var2];
 ;PCODE: $00000061 VOL: 0
 ;PCODE: $00000062 VOL: 0
 ;PCODE: $00000063 VOL: 0
-; 0000 0094 }else{ //Si lo que leemos es mayor o igual de 10 que dibuje en el display una E de ERROR
 ;PCODE: $00000064 VOL: 0
 ;PCODE: $00000065 VOL: 0
-; 0000 0095 PORTB=0x79;
 ;PCODE: $00000066 VOL: 0
+; 0000 0091 if (var>=10) //Si lo que leemos es mayor o igual de 10 que dibuje en el display una E de ERROR
 ;PCODE: $00000067 VOL: 0
-; 0000 0096 }
 ;PCODE: $00000068 VOL: 0
-; 0000 0097 
-; 0000 0098 // Operaciones ánodo común
-; 0000 0099 if (variableC<10){
 ;PCODE: $00000069 VOL: 0
+; 0000 0092 PORTB=0x79;
 ;PCODE: $0000006A VOL: 0
 ;PCODE: $0000006B VOL: 0
-; 0000 009A PORTA=~tabla7segmentos[variableC];
+; 0000 0093 // Place your code here
+; 0000 0094 };
 ;PCODE: $0000006C VOL: 0
 ;PCODE: $0000006D VOL: 0
 ;PCODE: $0000006E VOL: 0
+; 0000 0095 }
 ;PCODE: $0000006F VOL: 0
 ;PCODE: $00000070 VOL: 0
 ;PCODE: $00000071 VOL: 0
-; 0000 009B }else{ //Si lo que leemos es mayor o igual de 10 que dibuje en el display una E de ERROR
-;PCODE: $00000072 VOL: 0
-;PCODE: $00000073 VOL: 0
-; 0000 009C PORTA=~(0x79);
-;PCODE: $00000074 VOL: 0
-;PCODE: $00000075 VOL: 0
-; 0000 009D }
-;PCODE: $00000076 VOL: 0
-; 0000 009E 
-; 0000 009F 
-; 0000 00A0 }else{ // Display del 0 - F
-;PCODE: $00000077 VOL: 0
-;PCODE: $00000078 VOL: 0
-; 0000 00A1 // Operaciones para display cátodo común
-; 0000 00A2 if (variableD<16){
-;PCODE: $00000079 VOL: 0
-;PCODE: $0000007A VOL: 0
-;PCODE: $0000007B VOL: 0
-; 0000 00A3 PORTB=tabla7segmentos[variableD];
-;PCODE: $0000007C VOL: 0
-;PCODE: $0000007D VOL: 0
-;PCODE: $0000007E VOL: 0
-;PCODE: $0000007F VOL: 0
-;PCODE: $00000080 VOL: 0
-; 0000 00A4 }else{ //Si lo que leemos es igual a 16 que dibuje en el display una E de ERROR
-;PCODE: $00000081 VOL: 0
-;PCODE: $00000082 VOL: 0
-; 0000 00A5 PORTB=0x79;
-;PCODE: $00000083 VOL: 0
-;PCODE: $00000084 VOL: 0
-; 0000 00A6 }
-;PCODE: $00000085 VOL: 0
-; 0000 00A7 
-; 0000 00A8 // Operaciones ánodo común
-; 0000 00A9 if (variableC<16){
-;PCODE: $00000086 VOL: 0
-;PCODE: $00000087 VOL: 0
-;PCODE: $00000088 VOL: 0
-; 0000 00AA PORTA=~tabla7segmentos[variableC];
-;PCODE: $00000089 VOL: 0
-;PCODE: $0000008A VOL: 0
-;PCODE: $0000008B VOL: 0
-;PCODE: $0000008C VOL: 0
-;PCODE: $0000008D VOL: 0
-;PCODE: $0000008E VOL: 0
-; 0000 00AB }else{ //Si lo que leemos es mayor o igual de 16 que dibuje en el display una E de ERROR
-;PCODE: $0000008F VOL: 0
-;PCODE: $00000090 VOL: 0
-; 0000 00AC PORTA=~(0x79);
-;PCODE: $00000091 VOL: 0
-;PCODE: $00000092 VOL: 0
-; 0000 00AD }
-;PCODE: $00000093 VOL: 0
-; 0000 00AE 
-; 0000 00AF } // else display 0 - F
-;PCODE: $00000094 VOL: 0
-; 0000 00B0 
-; 0000 00B1 }
-;PCODE: $00000095 VOL: 0
-;PCODE: $00000096 VOL: 0
-; 0000 00B2 }
-;PCODE: $00000097 VOL: 0
-;PCODE: $00000098 VOL: 0
-;PCODE: $00000099 VOL: 0

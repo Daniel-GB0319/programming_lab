@@ -1,5 +1,5 @@
 
-;CodeVisionAVR C Compiler V3.51 Evaluation
+;CodeVisionAVR C Compiler V3.51 
 ;(C) Copyright 1998-2023 Pavel Haiduc, HP InfoTech S.R.L.
 ;http://www.hpinfotech.ro
 
@@ -1412,8 +1412,8 @@ __DELAY_USW_LOOP:
 	.ENDM
 
 ;NAME DEFINITIONS FOR GLOBAL VARIABLES ALLOCATED TO REGISTERS
-	.DEF _variableD=R5
-	.DEF _variableC=R4
+	.DEF _var=R5
+	.DEF _var2=R4
 
 	.CSEG
 	.ORG 0x00
@@ -1446,7 +1446,10 @@ __START_OF_CODE:
 
 _tabla7segmentos:
 	.DB  0x3F,0x6,0x5B,0x4F,0x66,0x6D,0x7C,0x7
-	.DB  0x7F,0x6F,0x77,0x1F,0x4E,0x3D,0x4F,0x47
+	.DB  0x7F,0x6F
+_tablahexadecimal:
+	.DB  0xC0,0xF9,0xA4,0xB0,0x99,0x92,0x82,0xF8
+	.DB  0x80,0x10,0x88,0x83,0xC6,0xA1,0x86,0x8E
 
 __RESET:
 	CLI
@@ -1528,11 +1531,11 @@ _main:
 	OUT  0x1B,R30
 ; 0000 0029 
 ; 0000 002A // Port B initialization
-; 0000 002B // Function: Bit7=Out Bit6=Out Bit5=Out Bit4=Out Bit3=Out Bit2=Out Bit1=Out Bit0=Out
-; 0000 002C DDRB=(1<<DDB7) | (1<<DDB6) | (1<<DDB5) | (1<<DDB4) | (1<<DDB3) | (1<<DDB2) | (1<<DDB1) | (1<<DDB0);
-	LDI  R30,LOW(255)
+; 0000 002B // Function: Bit7=In Bit6=Out Bit5=Out Bit4=Out Bit3=Out Bit2=Out Bit1=Out Bit0=Out
+; 0000 002C DDRB=(0<<DDB7) | (1<<DDB6) | (1<<DDB5) | (1<<DDB4) | (1<<DDB3) | (1<<DDB2) | (1<<DDB1) | (1<<DDB0);
+	LDI  R30,LOW(127)
 	OUT  0x17,R30
-; 0000 002D // State: Bit7=0 Bit6=0 Bit5=0 Bit4=0 Bit3=0 Bit2=0 Bit1=0 Bit0=0
+; 0000 002D // State: Bit7=T Bit6=0 Bit5=0 Bit4=0 Bit3=0 Bit2=0 Bit1=0 Bit0=0
 ; 0000 002E PORTB=(0<<PORTB7) | (0<<PORTB6) | (0<<PORTB5) | (0<<PORTB4) | (0<<PORTB3) | (0<<PORTB2) | (0<<PORTB1) | (0<<PORTB0);
 	LDI  R30,LOW(0)
 	OUT  0x18,R30
@@ -1541,9 +1544,9 @@ _main:
 ; 0000 0031 // Function: Bit7=In Bit6=In Bit5=In Bit4=In Bit3=In Bit2=In Bit1=In Bit0=In
 ; 0000 0032 DDRC=(0<<DDC7) | (0<<DDC6) | (0<<DDC5) | (0<<DDC4) | (0<<DDC3) | (0<<DDC2) | (0<<DDC1) | (0<<DDC0);
 	OUT  0x14,R30
-; 0000 0033 // State: Bit7=T Bit6=P Bit5=T Bit4=T Bit3=P Bit2=P Bit1=P Bit0=P
-; 0000 0034 PORTC=(0<<PORTC7) | (1<<PORTC6) | (0<<PORTC5) | (0<<PORTC4) | (1<<PORTC3) | (1<<PORTC2) | (1<<PORTC1) | (1<<PORTC0);
-	LDI  R30,LOW(79)
+; 0000 0033 // State: Bit7=T Bit6=T Bit5=T Bit4=T Bit3=P Bit2=P Bit1=P Bit0=P
+; 0000 0034 PORTC=(0<<PORTC7) | (0<<PORTC6) | (0<<PORTC5) | (0<<PORTC4) | (1<<PORTC3) | (1<<PORTC2) | (1<<PORTC1) | (1<<PORTC0);
+	LDI  R30,LOW(15)
 	OUT  0x15,R30
 ; 0000 0035 
 ; 0000 0036 // Port D initialization
@@ -1665,119 +1668,51 @@ _main:
 ; 0000 0089 while (1)
 _0x3:
 ; 0000 008A {
-; 0000 008B // Place your code here
-; 0000 008C //Enmascaramos los 4 bits menos significativos del puerto C Y D ya que los demás no interesan.
-; 0000 008D variableD=PIND&0x0f;
+; 0000 008B var=PIND&0x0f; //Enmascaramos los 4 bits menos significativos
 	IN   R30,0x10
 	ANDI R30,LOW(0xF)
 	MOV  R5,R30
-; 0000 008E variableC=PINC&0x0f;
+; 0000 008C var2=PINC&0x0f;
 	IN   R30,0x13
 	ANDI R30,LOW(0xF)
 	MOV  R4,R30
-; 0000 008F 
-; 0000 0090 if(selector == 0){ // Display del 0 - 9
-	SBIC 0x13,6
-	RJMP _0x6
-; 0000 0091 // Operaciones para display cátodo común
-; 0000 0092 if (variableD<10){
+; 0000 008D //del puerto A ya que los demás no interesan.
+; 0000 008E if (var<10)
 	LDI  R30,LOW(10)
 	CP   R5,R30
-	BRSH _0x7
-; 0000 0093 PORTB=tabla7segmentos[variableD];
-	RCALL SUBOPT_0x0
-; 0000 0094 }else{ //Si lo que leemos es mayor o igual de 10 que dibuje en el display una E de ERROR
-	RJMP _0x8
-_0x7:
-; 0000 0095 PORTB=0x79;
-	LDI  R30,LOW(121)
-	OUT  0x18,R30
-; 0000 0096 }
-_0x8:
-; 0000 0097 
-; 0000 0098 // Operaciones ánodo común
-; 0000 0099 if (variableC<10){
-	LDI  R30,LOW(10)
-	CP   R4,R30
-	BRSH _0x9
-; 0000 009A PORTA=~tabla7segmentos[variableC];
-	RCALL SUBOPT_0x1
-	RJMP _0x11
-; 0000 009B }else{ //Si lo que leemos es mayor o igual de 10 que dibuje en el display una E de ERROR
-_0x9:
-; 0000 009C PORTA=~(0x79);
-	LDI  R30,LOW(134)
-_0x11:
-	OUT  0x1B,R30
-; 0000 009D }
-; 0000 009E 
-; 0000 009F 
-; 0000 00A0 }else{ // Display del 0 - F
-	RJMP _0xB
-_0x6:
-; 0000 00A1 // Operaciones para display cátodo común
-; 0000 00A2 if (variableD<16){
-	LDI  R30,LOW(16)
-	CP   R5,R30
-	BRSH _0xC
-; 0000 00A3 PORTB=tabla7segmentos[variableD];
-	RCALL SUBOPT_0x0
-; 0000 00A4 }else{ //Si lo que leemos es igual a 16 que dibuje en el display una E de ERROR
-	RJMP _0xD
-_0xC:
-; 0000 00A5 PORTB=0x79;
-	LDI  R30,LOW(121)
-	OUT  0x18,R30
-; 0000 00A6 }
-_0xD:
-; 0000 00A7 
-; 0000 00A8 // Operaciones ánodo común
-; 0000 00A9 if (variableC<16){
-	LDI  R30,LOW(16)
-	CP   R4,R30
-	BRSH _0xE
-; 0000 00AA PORTA=~tabla7segmentos[variableC];
-	RCALL SUBOPT_0x1
-	RJMP _0x12
-; 0000 00AB }else{ //Si lo que leemos es mayor o igual de 16 que dibuje en el display una E de ERROR
-_0xE:
-; 0000 00AC PORTA=~(0x79);
-	LDI  R30,LOW(134)
-_0x12:
-	OUT  0x1B,R30
-; 0000 00AD }
-; 0000 00AE 
-; 0000 00AF } // else display 0 - F
-_0xB:
-; 0000 00B0 
-; 0000 00B1 }
-	RJMP _0x3
-; 0000 00B2 }
-_0x10:
-	RJMP _0x10
-; .FEND
-
-	.CSEG
-;OPTIMIZER ADDED SUBROUTINE, CALLED 2 TIMES, CODE SIZE REDUCTION:3 WORDS
-SUBOPT_0x0:
+	BRSH _0x6
+; 0000 008F PORTB=tabla7segmentos[var];
 	MOV  R30,R5
 	LDI  R31,0
 	SUBI R30,LOW(-_tabla7segmentos*2)
 	SBCI R31,HIGH(-_tabla7segmentos*2)
 	LPM  R0,Z
 	OUT  0x18,R0
-	RET
-
-;OPTIMIZER ADDED SUBROUTINE, CALLED 2 TIMES, CODE SIZE REDUCTION:3 WORDS
-SUBOPT_0x1:
+; 0000 0090 PORTA=tablahexadecimal[var2];
+_0x6:
 	MOV  R30,R4
 	LDI  R31,0
-	SUBI R30,LOW(-_tabla7segmentos*2)
-	SBCI R31,HIGH(-_tabla7segmentos*2)
-	LPM  R30,Z
-	COM  R30
-	RET
+	SUBI R30,LOW(-_tablahexadecimal*2)
+	SBCI R31,HIGH(-_tablahexadecimal*2)
+	LPM  R0,Z
+	OUT  0x1B,R0
+; 0000 0091 if (var>=10) //Si lo que leemos es mayor o igual de 10 que dibuje en el display una E de ERROR
+	LDI  R30,LOW(10)
+	CP   R5,R30
+	BRLO _0x7
+; 0000 0092 PORTB=0x79;
+	LDI  R30,LOW(121)
+	OUT  0x18,R30
+; 0000 0093 // Place your code here
+; 0000 0094 };
+_0x7:
+	RJMP _0x3
+; 0000 0095 }
+_0x8:
+	RJMP _0x8
+; .FEND
 
+	.CSEG
 ;RUNTIME LIBRARY
 
 	.CSEG
