@@ -1,0 +1,6 @@
+VERSION:3 SOURCE_TIMESTAMP:56A45A57
+NODE:I LEVEL:0 LINE:24 "c:\cvavreval\inc\mega8535.h"
+NODE:V LEVEL:0 LINE:27 "tecla -> R5"
+NODE:V LEVEL:0 LINE:27 "lectura -> R4"
+NODE:C LEVEL:0 LINE:28 "tabla7segmentos -> FLASH"
+NODE:F LEVEL:0 LINE:30 "main(void)"

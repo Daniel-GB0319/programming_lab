@@ -28,8 +28,8 @@ Data Stack size         : 128
 #define reset PIND.0
 #define stop PIND.1
 #define start PIND.2
-bit botonp;
-bit botona;
+//bit botonp;
+//bit botona;
 bit semaforo;
 unsigned char dec_seg, seg1, seg2;
 const char tabla7segmentos [10]={0x3f,0x06,0x5b,0x4f,0x66,0x6d,0x7c,0x07,0x7f,0x6f};
@@ -175,20 +175,7 @@ while (1)
         
       if(start==0)
         semaforo=1;
-      /*
-          
-      if (reset==0)
-            botona=0;
-        else
-            botona=1;
-        if ((botonp==1)&&(botona==0)) //hubo cambio de flanco de 1 a 0
-        {
-                   
-            }
-            delay_ms(40); //Se coloca retardo de 40mS para eliminar rebotes
-        }
-        if ((botonp==0)&&(botona==1)) //hubo cambio de flanco de 0 a 1
-        */    
+    
         delay_ms(40); //Se coloca retardo de 40mS para eliminar rebotes
          
         PORTB=tabla7segmentos [seg2]; // Muestra las decenas de segundo 
